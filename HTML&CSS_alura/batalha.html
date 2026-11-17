@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#11131a">
     <meta name="description" content="Monte dois times de seis Pokémon e batalhe em uma partida local por turnos.">
+    <link rel="icon" href="./pokemon.png" type="image/x-icon">
     <title>Batalha Pokémon — Arena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,23 +59,6 @@
                     </select>
                 </label>
             </div>
-            <p class="battle-rules-note">
-                Cada jogador escolhe seis Pokémon. No modo manual, escolha quatro golpes para cada um.
-                As opções automática e aleatória também estão disponíveis. A simulação aplica precisão,
-                prioridade e ordem por velocidade, incluindo Trick Room e Tailwind, STAB, efetividade,
-                dano fixo e OHKO, golpes de múltiplos acertos, recuperação e partilha de HP, recuo, status
-                básicos, alterações de atributos, Protect, Detect, Quick Guard, Wide Guard, Mat Block, Endure
-                e trocas forçadas ou causadas pelo próprio golpe. Também são simulados efeitos como aprisionamento,
-                Leech Seed, Yawn, Perish Song, Disable, Encore, Taunt, Torment, Nightmare, Ingrain, Aqua Ring,
-                Wish, Rest, Substitute, Destiny Bond, Heal Block, Telekinesis, Smack Down, Tar Shot, Stockpile,
-                Swallow, Spit Up, Transform, Mimic, Sketch, Copycat, Mirror Move, Clear Smog, Psych Up, trocas de
-                atributos, alterações de tipo, Metronome, Helping Hand, Magic Coat, After You, Quash e golpes para
-                remover armadilhas. A simulação inclui clima, terrenos, telas defensivas e armadilhas de entrada.
-                Habilidades, itens e alguns efeitos específicos ainda não são simulados.
-                Quando um Pokémon é derrotado, seu jogador escolhe a reserva que entrará sem consumir a próxima ação.
-                No 2v2, escolha um golpe para cada Pokémon ativo e clique no adversário que deseja atingir.
-                Também é possível trocar voluntariamente um Pokémon pelas reservas durante a vez.
-            </p>
             <p class="battle-message" id="setup-message" role="status">Carregando Pokémon...</p>
             <div class="team-builder" id="team-builder"></div>
             <div class="battle-setup-actions">
@@ -118,23 +102,83 @@
             </div>
             <button class="picker-close" id="pokemon-picker-close" type="button" aria-label="Fechar Pokédex">×</button>
         </div>
-        <label class="picker-search">
-            <span class="sr-only">Buscar Pokémon por nome ou número</span>
-            <span class="search-icon" aria-hidden="true"></span>
-            <input id="pokemon-picker-search" type="search" autocomplete="off" placeholder="Buscar por nome ou número">
-        </label>
-        <div class="picker-result-line">
-            <p id="pokemon-picker-count" role="status">Carregando Pokémon...</p>
-            <button class="picker-retry" id="pokemon-picker-retry" type="button" hidden>Tentar novamente</button>
+        <div id="pokemon-list-view">
+            <div class="picker-filters">
+                <label class="picker-search">
+                    <span class="sr-only">Buscar Pokémon por nome ou número</span>
+                    <span class="search-icon" aria-hidden="true"></span>
+                    <input id="pokemon-picker-search" type="search" autocomplete="off" placeholder="Buscar por nome ou número">
+                </label>
+                <label class="picker-generation">
+                    <span>Geração</span>
+                    <select id="pokemon-picker-generation">
+                        <option value="">Todas</option>
+                        <option value="1">Geração I</option>
+                        <option value="2">Geração II</option>
+                        <option value="3">Geração III</option>
+                        <option value="4">Geração IV</option>
+                        <option value="5">Geração V</option>
+                        <option value="6">Geração VI</option>
+                        <option value="7">Geração VII</option>
+                        <option value="8">Geração VIII</option>
+                        <option value="9">Geração IX</option>
+                    </select>
+                </label>
+            </div>
+            <div class="picker-result-line">
+                <p id="pokemon-picker-count" role="status">Carregando Pokémon...</p>
+                <button class="picker-retry" id="pokemon-picker-retry" type="button" hidden>Tentar novamente</button>
+            </div>
+            <div class="picker-grid-wrap">
+                <div class="pokemon-grid picker-grid" id="pokemon-picker-grid" aria-live="polite"></div>
+            </div>
+            <nav class="pagination picker-pagination" id="pokemon-picker-pagination" aria-label="Páginas da Pokédex">
+                <button class="page-button" id="pokemon-picker-prev" type="button" aria-label="Página anterior">‹</button>
+                <span id="pokemon-picker-page">Página 1 de 1</span>
+                <button class="page-button" id="pokemon-picker-next" type="button" aria-label="Próxima página">›</button>
+            </nav>
         </div>
-        <div class="picker-grid-wrap">
-            <div class="pokemon-grid picker-grid" id="pokemon-picker-grid" aria-live="polite"></div>
-        </div>
-        <nav class="pagination picker-pagination" id="pokemon-picker-pagination" aria-label="Páginas da Pokédex">
-            <button class="page-button" id="pokemon-picker-prev" type="button" aria-label="Página anterior">‹</button>
-            <span id="pokemon-picker-page">Página 1 de 1</span>
-            <button class="page-button" id="pokemon-picker-next" type="button" aria-label="Próxima página">›</button>
-        </nav>
+        <section class="pokemon-detail-view" id="pokemon-detail-view" hidden>
+            <div id="pokemon-detail-card"></div>
+            <div class="pokemon-detail-summary pokemon-move-buttons" id="pending-move-buttons"
+                aria-label="Golpes escolhidos"></div>
+            <div class="pokemon-detail-actions">
+                <button class="battle-primary-button" id="confirm-pokemon-selection" type="button">Adicionar ao time</button>
+                <button class="picker-back-button" id="pokemon-detail-back" type="button">Voltar à Pokédex</button>
+            </div>
+            <p class="picker-view-message" id="pokemon-detail-message" role="status"></p>
+        </section>
+        <section class="item-picker-view" id="item-picker-view" hidden>
+            <div class="picker-view-heading">
+                <h3>Escolher item segurado</h3>
+                <button class="picker-back-button" id="item-picker-back" type="button">Voltar</button>
+            </div>
+            <div class="item-picker-grid" id="item-picker-grid"></div>
+        </section>
+        <section class="move-picker-view" id="move-picker-view" hidden>
+            <div class="picker-view-heading">
+                <h3>Escolher golpes</h3>
+                <button class="picker-back-button" id="move-picker-back" type="button">Voltar</button>
+            </div>
+            <label class="picker-search move-picker-search">
+                <span class="sr-only">Buscar golpes por nome</span>
+                <span class="search-icon" aria-hidden="true"></span>
+                <input id="move-picker-search" type="search" autocomplete="off" placeholder="Buscar golpe pelo nome">
+            </label>
+            <div class="picker-result-line">
+                <p id="move-picker-count" role="status">Selecione até quatro golpes.</p>
+            </div>
+            <div class="move-picker-list-wrap">
+                <div class="move-picker-list" id="move-picker-list" aria-live="polite"></div>
+            </div>
+            <nav class="pagination move-picker-pagination" id="move-picker-pagination" aria-label="Páginas dos golpes">
+                <button class="page-button" id="move-picker-prev" type="button" aria-label="Página anterior">‹</button>
+                <span id="move-picker-page">Página 1 de 1</span>
+                <button class="page-button" id="move-picker-next" type="button" aria-label="Próxima página">›</button>
+            </nav>
+            <p class="picker-view-message" id="move-picker-message" role="status"></p>
+            <button class="battle-primary-button move-picker-confirm" id="confirm-move-selection" type="button">Concluir escolha (0/4)</button>
+        </section>
     </dialog>
 
     <dialog class="switch-picker-dialog" id="switch-picker-dialog" aria-labelledby="switch-picker-title">
@@ -144,7 +188,8 @@
                 <h2 id="switch-picker-title">Escolher reserva</h2>
                 <p id="switch-picker-context">Selecione um Pokémon para entrar na batalha.</p>
             </div>
-            <button class="picker-close" id="switch-picker-close" type="button" aria-label="Fechar lista de reservas">×</button>
+            <button class="picker-close" id="switch-picker-close" type="button"
+                aria-label="Fechar lista de reservas">×</button>
         </div>
         <div class="switch-picker-list" id="switch-picker-list" aria-live="polite"></div>
     </dialog>

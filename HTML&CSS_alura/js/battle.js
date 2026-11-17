@@ -61,6 +61,92 @@ window.PokedexApp.battle = (() => {
         "mean-look", "block", "spider-web", "anchor-shot", "jaw-lock", "spirit-shackle",
         "thousand-waves", "octolock"
     ]);
+    const MEGA_STONES = {
+        venusaurite: "venusaur-mega",
+        charizardite_x: "charizard-mega-x",
+        charizardite_y: "charizard-mega-y",
+        blastoisinite: "blastoise-mega",
+        alakazite: "alakazam-mega",
+        gengarite: "gengar-mega",
+        kangaskhanite: "kangaskhan-mega",
+        pinsirite: "pinsir-mega",
+        gyaradosite: "gyarados-mega",
+        aerodactylite: "aerodactyl-mega",
+        mewtwonite_x: "mewtwo-mega-x",
+        mewtwonite_y: "mewtwo-mega-y",
+        ampharosite: "ampharos-mega",
+        scizorite: "scizor-mega",
+        heracronite: "heracross-mega",
+        houndoominite: "houndoom-mega",
+        tyranitarite: "tyranitar-mega",
+        blazikenite: "blaziken-mega",
+        gardevoirite: "gardevoir-mega",
+        mawilite: "mawile-mega",
+        aggronite: "aggron-mega",
+        medichamite: "medicham-mega",
+        manectite: "manectric-mega",
+        banettite: "banette-mega",
+        absolite: "absol-mega",
+        latiasite: "latias-mega",
+        latiosite: "latios-mega",
+        garchompite: "garchomp-mega",
+        lucarionite: "lucario-mega",
+        abomasite: "abomasnow-mega",
+        beedrillite: "beedrill-mega",
+        pidgeotite: "pidgeot-mega",
+        slowbronite: "slowbro-mega",
+        steelixite: "steelix-mega",
+        sceptilite: "sceptile-mega",
+        swampertite: "swampert-mega",
+        sablenite: "sableye-mega",
+        sharpedonite: "sharpedo-mega",
+        cameruptite: "camerupt-mega",
+        altarianite: "altaria-mega",
+        glalitite: "glalie-mega",
+        salamencite: "salamence-mega",
+        metagrossite: "metagross-mega",
+        lopunnite: "lopunny-mega",
+        galladite: "gallade-mega",
+        audinite: "audino-mega",
+        diancite: "diancie-mega"
+    };
+    const HELD_ITEMS = {
+        leftovers: "Leftovers · recupera HP a cada turno",
+        black_sludge: "Black Sludge · recupera HP de Pokémon venenosos",
+        life_orb: "Life Orb · aumenta dano e causa recuo",
+        expert_belt: "Expert Belt · aumenta dano super efetivo",
+        muscle_band: "Muscle Band · aumenta dano físico",
+        wise_glasses: "Wise Glasses · aumenta dano especial",
+        assault_vest: "Assault Vest · aumenta Defesa Especial",
+        eviolite: "Eviolite · aumenta as Defesas",
+        focus_sash: "Focus Sash · resiste a um nocaute com HP cheio",
+        rocky_helmet: "Rocky Helmet · causa dano em contato",
+        shell_bell: "Shell Bell · recupera parte do dano causado",
+        sitrus_berry: "Sitrus Berry · recupera HP baixo uma vez",
+        oran_berry: "Oran Berry · recupera 10 HP uma vez",
+        lum_berry: "Lum Berry · cura uma condição de status uma vez",
+        flame_orb: "Flame Orb · causa queimadura no fim do turno",
+        toxic_orb: "Toxic Orb · causa envenenamento grave no fim do turno",
+        weakness_policy: "Weakness Policy · aumenta Ataque ao sofrer dano super efetivo",
+        heavy_duty_boots: "Heavy-Duty Boots · evita armadilhas de entrada",
+        charcoal: "Charcoal · aumenta dano de Fogo",
+        mystic_water: "Mystic Water · aumenta dano de Água",
+        miracle_seed: "Miracle Seed · aumenta dano de Grama",
+        magnet: "Magnet · aumenta dano Elétrico",
+        never_melt_ice: "Never-Melt Ice · aumenta dano de Gelo",
+        black_belt: "Black Belt · aumenta dano Lutador",
+        poison_barb: "Poison Barb · aumenta dano Venenoso",
+        soft_sand: "Soft Sand · aumenta dano Terrestre",
+        sharp_beak: "Sharp Beak · aumenta dano Voador",
+        twisted_spoon: "Twisted Spoon · aumenta dano Psíquico",
+        silver_powder: "Silver Powder · aumenta dano Inseto",
+        hard_stone: "Hard Stone · aumenta dano Pedra",
+        spell_tag: "Spell Tag · aumenta dano Fantasma",
+        dragon_fang: "Dragon Fang · aumenta dano Dragão",
+        black_glasses: "Black Glasses · aumenta dano Noturno",
+        metal_coat: "Metal Coat · aumenta dano Aço",
+        pixie_plate: "Pixie Plate · aumenta dano Fada"
+    };
     const teamBuilder = document.querySelector("#team-builder");
     const setupMessage = document.querySelector("#setup-message");
     const startButton = document.querySelector("#start-battle");
@@ -71,8 +157,27 @@ window.PokedexApp.battle = (() => {
     const battleLog = document.querySelector("#battle-log");
     const battleTurn = document.querySelector("#battle-turn");
     const pickerDialog = document.querySelector("#pokemon-picker-dialog");
+    const pickerTitle = document.querySelector("#pokemon-picker-title");
     const pickerSearch = document.querySelector("#pokemon-picker-search");
+    const pickerGeneration = document.querySelector("#pokemon-picker-generation");
     const pickerContext = document.querySelector("#pokemon-picker-context");
+    const pokemonListView = document.querySelector("#pokemon-list-view");
+    const pokemonDetailView = document.querySelector("#pokemon-detail-view");
+    const pokemonDetailCard = document.querySelector("#pokemon-detail-card");
+    const pokemonDetailMessage = document.querySelector("#pokemon-detail-message");
+    const pendingMoveButtons = document.querySelector("#pending-move-buttons");
+    const itemPickerView = document.querySelector("#item-picker-view");
+    const itemPickerGrid = document.querySelector("#item-picker-grid");
+    const movePickerView = document.querySelector("#move-picker-view");
+    const movePickerSearch = document.querySelector("#move-picker-search");
+    const movePickerList = document.querySelector("#move-picker-list");
+    const movePickerCount = document.querySelector("#move-picker-count");
+    const movePickerPagination = document.querySelector("#move-picker-pagination");
+    const movePickerPageLabel = document.querySelector("#move-picker-page");
+    const movePickerPrev = document.querySelector("#move-picker-prev");
+    const movePickerNext = document.querySelector("#move-picker-next");
+    const movePickerMessage = document.querySelector("#move-picker-message");
+    const movePickerConfirm = document.querySelector("#confirm-move-selection");
     const pickerCount = document.querySelector("#pokemon-picker-count");
     const pickerGrid = document.querySelector("#pokemon-picker-grid");
     const pickerPagination = document.querySelector("#pokemon-picker-pagination");
@@ -87,12 +192,21 @@ window.PokedexApp.battle = (() => {
     const playerNames = ["Jogador 1", "Jogador 2"];
     let pokemonList = [];
     const speciesMoveCache = new Map();
+    const evolutionEligibilityCache = new Map();
     const typeDetailCache = new Map();
     let teamModes = ["manual", "manual"];
     let pickerTarget = null;
+    let pickerMode = "list";
+    let pendingPokemon = null;
+    let pendingHeldItem = null;
+    let pendingMoves = [];
+    let pendingMoveDetails = {};
     let pickerPage = 1;
+    let movePickerPage = 1;
     let pickerRequestVersion = 0;
+    let movePickerRequestVersion = 0;
     let pickerSearchTimer = null;
+    let movePickerSearchTimer = null;
     let renderedLogLength = 0;
     let switchTarget = null;
     let game = null;
@@ -100,6 +214,63 @@ window.PokedexApp.battle = (() => {
     function setSetupMessage(message, isError) {
         setupMessage.textContent = message;
         setupMessage.classList.toggle("error", Boolean(isError));
+    }
+
+    function isSelectablePokemon(pokemon) {
+        return !/(?:-mega(?:-|$)|-(?:gmax|gigantamax|dynamax|eternamax)(?:-|$))/i.test(pokemon.name);
+    }
+
+    function itemSpriteUrl(itemName) {
+        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${itemName.replace(/_/g, "-")}.png`;
+    }
+
+    function itemsForPokemon(pokemonName) {
+        return [
+            { name: "", title: "Sem item", description: "Este Pokémon não segurará nenhum item." },
+            ...Object.entries(HELD_ITEMS).map(([name, description]) => ({
+                name,
+                title: formatName(name.replace(/_/g, "-")),
+                description: description.split(" · ").slice(1).join(" · ")
+            })),
+            ...Object.entries(MEGA_STONES).filter(([, formName]) =>
+                formName.startsWith(`${pokemonName}-mega`)
+                    && pokemonList.some(({ name }) => name === formName))
+                    .map(([name]) => ({
+                        name,
+                        title: formatName(name.replace(/_/g, "-")),
+                        description: "Permite Mega Evoluir este Pokémon uma vez durante a batalha."
+                    }))
+        ];
+    }
+
+    async function isEvioliteEligible(pokemon) {
+        const speciesUrl = pokemon.species?.url;
+        if (!speciesUrl) throw new Error(`Espécie indisponível para verificar Eviolite em ${pokemon.name}`);
+        if (!evolutionEligibilityCache.has(speciesUrl)) {
+            evolutionEligibilityCache.set(speciesUrl, (async () => {
+                const species = await api.fetchJson(speciesUrl);
+                const evolutionChain = await api.fetchJson(species.evolution_chain.url);
+                const findSpecies = (node) => {
+                    if (node.species.name === species.name) return node.evolves_to.length > 0;
+                    for (const evolution of node.evolves_to) {
+                        const eligible = findSpecies(evolution);
+                        if (eligible !== null) return eligible;
+                    }
+                    return null;
+                };
+                const eligible = findSpecies(evolutionChain.chain);
+                if (typeof eligible !== "boolean") {
+                    throw new Error(`Espécie não encontrada na cadeia evolutiva de ${pokemon.name}`);
+                }
+                return eligible;
+            })());
+        }
+        try {
+            return await evolutionEligibilityCache.get(speciesUrl);
+        } catch (error) {
+            evolutionEligibilityCache.delete(speciesUrl);
+            throw error;
+        }
     }
 
     function plainName(name) {
@@ -112,6 +283,17 @@ window.PokedexApp.battle = (() => {
 
     function setMemberTypeNames(member, types) {
         member.currentTypes = [...new Set(types)];
+    }
+
+    function memberResetTypes(member) {
+        return member.megaEvolved ? member.megaTypes : member.originalTypes;
+    }
+
+    function canMegaEvolve(member, teamIndex, activeSlot) {
+        const actionAlreadyQueued = game.pendingActions[teamIndex]
+            .some((action) => action.megaEvolve);
+        return Boolean(member.megaPokemon && member.heldItem && !game.megaUsed[teamIndex]
+            && !actionAlreadyQueued);
     }
 
     function waitForAnimation(duration) {
@@ -181,52 +363,72 @@ window.PokedexApp.battle = (() => {
         return available.slice(0, 4);
     }
 
-    function renderMoveEditor(slot, teamIndex, slotIndex) {
-        if (teamModes[teamIndex] !== "manual") return "";
-        const selectedCount = slot.selectedMoves.filter(Boolean).length;
-        const controls = Array.from({ length: 4 }, (_, moveIndex) => {
-            const selectedName = slot.selectedMoves[moveIndex] || "";
-            const options = uniqueMoves(slot.pokemon.moves)
-                .filter(({ move }) => !slot.selectedMoves.some((name, index) => index !== moveIndex && name === move.name))
-                .map(({ move }) => `<option value="${escapeHTML(move.name)}" ${move.name === selectedName ? "selected" : ""}>${formatName(move.name)}</option>`)
-                .join("");
-            return `<label class="sr-only" for="move-${teamIndex}-${slotIndex}-${moveIndex}">Golpe ${moveIndex + 1}</label>
-                <select class="move-picker" id="move-${teamIndex}-${slotIndex}-${moveIndex}" data-team="${teamIndex}" data-slot="${slotIndex}" data-move-slot="${moveIndex}">
-                    <option value="">Escolher golpe ${moveIndex + 1}</option>${options}
-                </select>`;
-        }).join("");
-
-        return `<details class="slot-move-editor">
-            <summary>Escolher golpes (${selectedCount}/4)</summary>
-            <div class="slot-move-selects">${controls}</div>
-            <p class="slot-move-note">Os golpes de status não causam dano neste simulador.</p>
-        </details>`;
+    function renderMovePreview(move) {
+        const localizedDescription = move.flavor_text_entries?.find(({ language }) =>
+            ["pt", "pt-br"].includes(language.name.toLowerCase()))?.flavor_text;
+        const englishEffect = move.effect_entries?.find(({ language }) => language.name === "en")
+            || move.effect_entries?.[0];
+        const description = (localizedDescription || englishEffect?.short_effect || englishEffect?.effect
+            || "Descrição indisponível.")
+            .replace(/\$effect_chance/g, String(move.effect_chance ?? ""))
+            .replace(/\s+/g, " ")
+            .trim();
+        const type = move.type?.name || "normal";
+        const power = move.power ? `${move.power} de poder` : "Golpe de status";
+        const accuracy = move.accuracy === null ? "Precisão infalível" : `${move.accuracy}% de precisão`;
+        return `<div class="move-preview-heading">
+            <strong>${formatName(move.name)}</strong>
+            <span class="type-tag type-${escapeHTML(type)}">${typeLabel(type)}</span>
+        </div>
+        <p>${escapeHTML(description)}</p>
+        <span class="move-preview-meta">${power} · ${accuracy}</span>`;
     }
 
     function renderSlot(slot, teamIndex, slotIndex) {
         const selection = slot?.entry;
-        let preview = '<div class="slot-preview-placeholder">Nenhum Pokémon selecionado</div>';
+        const heldItem = slot?.heldItem || "";
         if (selection && slot.pokemon) {
             const types = slot.pokemon.types.map(({ type }) =>
                 `<span class="type-tag type-${escapeHTML(type.name)}">${typeLabel(type.name)}</span>`).join("");
-            preview = `<div class="slot-preview">
-                <img src="${escapeHTML(imageUrl(slot.pokemon))}" alt="">
-                <span>#${String(selection.id).padStart(4, "0")} ${formatName(selection.name)}</span>
-                <span class="slot-types">${types}</span>
-            </div>`;
-        } else if (selection && slot.loading) {
+            const heldItemSlot = heldItem
+                ? `<span class="team-slot-held-item">
+                    <img src="${escapeHTML(itemSpriteUrl(heldItem))}"
+                        alt="${escapeHTML(formatName(heldItem.replace(/_/g, "-")))}"
+                        onerror="this.hidden = true">
+                </span>`
+                : '<span class="team-slot-held-item" aria-label="Sem item segurado"><span aria-hidden="true">+</span></span>';
+            return `<button class="team-slot" type="button"
+                aria-label="Editar ${formatName(selection.name)}"
+                data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>
+                <span class="team-slot-content">
+                    <span class="slot-pokemon-art">
+                        <img src="${escapeHTML(imageUrl(slot.pokemon))}" alt="">
+                    </span>
+                    <span class="team-slot-info">
+                        ${heldItemSlot}
+                        <span class="team-slot-title">${formatName(selection.name)}</span>
+                        <span class="slot-types">${types}</span>
+                    </span>
+                </span>
+            </button>`;
+        }
+
+        let preview = '<div class="slot-preview-placeholder">Nenhum Pokémon selecionado</div>';
+        if (selection && slot.loading) {
             preview = '<div class="slot-loading">Carregando dados do Pokémon...</div>';
         } else if (selection) {
             preview = '<div class="slot-loading">Falha ao carregar. Selecione novamente para tentar outra vez.</div>';
         }
 
-        return `<article class="team-slot">
-            <div class="team-slot-heading"><span>Pokémon ${slotIndex + 1}</span><span>${selection ? "Selecionado" : "Vaga livre"}</span></div>
-            <button class="pokemon-select-button" type="button" aria-label="${selection ? "Trocar" : "Escolher"} Pokémon ${slotIndex + 1} do Jogador ${teamIndex + 1}"
-                data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>${selection ? "Trocar Pokémon" : "Abrir Pokédex"}</button>
+        return `<button class="team-slot is-empty" type="button"
+            aria-label="${selection ? `Editar ${formatName(selection.name)}` : `Escolher Pokémon ${slotIndex + 1} para o Time ${teamIndex + 1}`}"
+            data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>
+            <div class="team-slot-heading">
+                <span class="team-slot-title">${selection && slot.pokemon ? formatName(selection.name) : `Pokémon ${slotIndex + 1}`}</span>
+                <span class="team-slot-status">${selection ? slot.loading ? "Carregando" : "Falha ao carregar" : "Vaga livre"}</span>
+            </div>
             ${preview}
-            ${slot?.pokemon ? renderMoveEditor(slot, teamIndex, slotIndex) : ""}
-        </article>`;
+        </button>`;
     }
 
     function renderTeamBuilder() {
@@ -256,33 +458,14 @@ window.PokedexApp.battle = (() => {
                 </div>
             </section>`).join("");
 
-        teamBuilder.querySelectorAll(".pokemon-select-button").forEach((button) => {
-            button.addEventListener("click", () => openPokemonPicker(
-                Number(button.dataset.team), Number(button.dataset.slot)
+        teamBuilder.querySelectorAll(".team-slot").forEach((slot) => {
+            slot.addEventListener("click", () => openPokemonSlot(
+                Number(slot.dataset.team), Number(slot.dataset.slot)
             ));
         });
 
         teamBuilder.querySelectorAll("[data-random-team]").forEach((button) => {
             button.addEventListener("click", () => randomizeTeam(Number(button.dataset.randomTeam)));
-        });
-
-        teamBuilder.querySelectorAll(".move-picker").forEach((select) => {
-            select.addEventListener("change", () => {
-                const teamIndex = Number(select.dataset.team);
-                const slotIndex = Number(select.dataset.slot);
-                const moveIndex = Number(select.dataset.moveSlot);
-                const slot = pokemonTeams[teamIndex][slotIndex];
-                const duplicate = slot.selectedMoves.some((name, index) => index !== moveIndex && name === select.value);
-                if (duplicate) {
-                    setSetupMessage("Escolha quatro golpes diferentes para cada Pokémon.", true);
-                    select.value = slot.selectedMoves[moveIndex] || "";
-                    return;
-                }
-                slot.selectedMoves[moveIndex] = select.value;
-                const summary = select.closest(".slot-move-editor").querySelector("summary");
-                summary.textContent = `Escolher golpes (${slot.selectedMoves.filter(Boolean).length}/4)`;
-                setSetupMessage("", false);
-            });
         });
 
         teamBuilder.querySelectorAll("[data-player-name]").forEach((input) => {
@@ -301,13 +484,14 @@ window.PokedexApp.battle = (() => {
     }
 
     async function randomizeTeam(teamIndex) {
-        if (teamRandomizing[teamIndex] || pokemonTeams[teamIndex].some((slot) => slot?.loading) || pokemonList.length < 6) {
+        const selectablePokemon = pokemonList.filter(isSelectablePokemon);
+        if (teamRandomizing[teamIndex] || pokemonTeams[teamIndex].some((slot) => slot?.loading) || selectablePokemon.length < 6) {
             setSetupMessage("Aguarde o carregamento dos Pokémon antes de sortear o time.", true);
             return;
         }
 
         const previousTeam = pokemonTeams[teamIndex];
-        const shuffled = [...pokemonList];
+        const shuffled = [...selectablePokemon];
         for (let index = shuffled.length - 1; index > 0; index--) {
             const swapIndex = Math.floor(Math.random() * (index + 1));
             [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
@@ -317,6 +501,7 @@ window.PokedexApp.battle = (() => {
         pokemonTeams[teamIndex] = entries.map((entry) => ({
             entry,
             pokemon: null,
+            heldItem: null,
             selectedMoves: [],
             loading: true
         }));
@@ -341,16 +526,30 @@ window.PokedexApp.battle = (() => {
         }
     }
 
-    async function selectPokemon(teamIndex, slotIndex, entry) {
+    async function selectPokemon(teamIndex, slotIndex, selection) {
+        const { entry, heldItem, selectedMoves, moveDetails, pokemon } = selection;
         const currentSlot = pokemonTeams[teamIndex][slotIndex];
-        if (currentSlot?.entry.id === entry.id && (currentSlot.pokemon || currentSlot.loading)) return;
+        if (currentSlot?.entry.id === entry.id && currentSlot.pokemon) {
+            currentSlot.heldItem = heldItem;
+            currentSlot.selectedMoves = [...selectedMoves];
+            currentSlot.moveDetails = { ...moveDetails };
+            renderTeamBuilder();
+            return;
+        }
 
-        const slot = { entry, pokemon: null, selectedMoves: [], loading: true };
+        const slot = {
+            entry,
+            pokemon: null,
+            heldItem,
+            selectedMoves: [...selectedMoves],
+            moveDetails: { ...moveDetails },
+            loading: true
+        };
         pokemonTeams[teamIndex][slotIndex] = slot;
         renderTeamBuilder();
         setSetupMessage("", false);
         try {
-            slot.pokemon = await ensurePokemonMoves(await api.getPokemon(entry.id));
+            slot.pokemon = await ensurePokemonMoves(pokemon || await api.getPokemon(entry.id));
             if (pokemonTeams[teamIndex][slotIndex] !== slot) return;
             slot.loading = false;
             renderTeamBuilder();
@@ -392,16 +591,19 @@ window.PokedexApp.battle = (() => {
                 </div>
                 <div class="type-list">${types}</div>
             </div>`;
-        button.addEventListener("click", () => choosePokemon(entry));
+        button.addEventListener("click", () => choosePokemon(entry, pokemon));
         return button;
     }
 
     async function renderPokemonPicker() {
+        if (pickerMode !== "list") return;
         const requestVersion = ++pickerRequestVersion;
         const query = pickerSearch.value.trim().toLowerCase();
         const idQuery = Number(query.replace(/^#/, ""));
-        const results = pokemonList.filter((pokemon) =>
-            !query || pokemon.name.includes(query) || (Number.isFinite(idQuery) && pokemon.id === idQuery));
+        const selectedGeneration = Number(pickerGeneration.value);
+        const results = pokemonList.filter((pokemon) => isSelectablePokemon(pokemon)
+            && (!query || pokemon.name.includes(query) || (Number.isFinite(idQuery) && pokemon.id === idQuery))
+            && (!selectedGeneration || utils.generationFor(pokemon.id) === selectedGeneration));
         const pageCount = Math.max(1, Math.ceil(results.length / window.PokedexApp.config.pageSize));
         pickerPage = Math.min(pickerPage, pageCount);
         const start = (pickerPage - 1) * window.PokedexApp.config.pageSize;
@@ -433,22 +635,270 @@ window.PokedexApp.battle = (() => {
         }
     }
 
+    function showPickerMode(mode) {
+        pickerMode = mode;
+        pokemonListView.hidden = mode !== "list";
+        pokemonDetailView.hidden = mode !== "details";
+        itemPickerView.hidden = mode !== "items";
+        movePickerView.hidden = mode !== "moves";
+        const titles = {
+            list: "Escolher Pokémon",
+            details: "Preparar Pokémon",
+            items: "Escolher item",
+            moves: "Escolher golpes"
+        };
+        pickerTitle.textContent = titles[mode];
+        pickerContext.textContent = {
+            list: "Selecione um Pokémon para configurar seu time.",
+            details: "Confira o Pokémon e defina item e golpes.",
+            items: "Escolha o item que este Pokémon vai segurar.",
+            moves: "Selecione quatro golpes para este Pokémon."
+        }[mode];
+    }
+
+    function renderPokemonDetail() {
+        if (!pendingPokemon) return;
+        const { entry, pokemon } = pendingPokemon;
+        const statLabels = {
+            hp: "HP",
+            attack: "Ataque",
+            defense: "Defesa",
+            "special-attack": "Ataque especial",
+            "special-defense": "Defesa especial",
+            speed: "Velocidade"
+        };
+        const types = pokemon.types.map(({ type }) =>
+            `<span class="type-tag type-${escapeHTML(type.name)}">${typeLabel(type.name)}</span>`).join("");
+        const stats = pokemon.stats.map(({ stat, base_stat }) => {
+            const label = statLabels[stat.name] || stat.name.replace(/-/g, " ");
+            const percentage = Math.min(255, Math.max(0, base_stat)) / 255 * 100;
+            return `<div class="pokemon-base-stat-row">
+                <span class="pokemon-base-stat-label">${escapeHTML(label)}</span>
+                <div class="pokemon-base-stat-track" role="meter" aria-label="${escapeHTML(label)}"
+                    aria-valuemin="0" aria-valuemax="255" aria-valuenow="${base_stat}">
+                    <span style="width: ${percentage.toFixed(1)}%"></span>
+                </div>
+            </div>`;
+        }).join("");
+        pokemonDetailCard.innerHTML = `<div class="pokemon-detail-card">
+            <div class="pokemon-detail-art">
+                <img src="${escapeHTML(imageUrl(pokemon))}" alt="${formatName(entry.name)}">
+            </div>
+            <div class="pokemon-detail-info">
+                <span class="pokemon-number">#${String(entry.id).padStart(4, "0")}</span>
+                <div class="pokemon-detail-name-row">
+                    <h3>${formatName(entry.name)}</h3>
+                    <button class="held-item-slot" type="button" data-choose-held-item
+                        aria-label="${pendingHeldItem ? `Trocar item ${plainName(pendingHeldItem.replace(/_/g, "-"))}` : "Escolher item"}">
+                        ${pendingHeldItem
+                            ? `<img src="${escapeHTML(itemSpriteUrl(pendingHeldItem))}" alt=""
+                                onerror="this.hidden = true">`
+                            : '<span aria-hidden="true">+</span>'}
+                    </button>
+                </div>
+                <div class="type-list">${types}</div>
+                <p class="pokemon-base-chart-title">Atributos base</p>
+                <div class="pokemon-detail-stats">${stats}</div>
+            </div>
+        </div>`;
+        pokemonDetailCard.querySelector("[data-choose-held-item]").addEventListener("click", openItemPicker);
+        pendingMoveButtons.innerHTML = Array.from({ length: 4 }, (_, index) => {
+            const moveName = pendingMoves[index];
+            const moveDetails = moveName ? pendingMoveDetails[moveName] : null;
+            const moveType = moveDetails?.type?.name;
+            return `<button class="pokemon-move-button${moveType ? "" : " is-empty"}" type="button" data-open-move-picker
+                aria-label="${moveName ? `Editar golpe ${index + 1}: ${plainName(moveName)}` : `Escolher golpe ${index + 1}`}">
+                <span class="pokemon-move-slot-label">Golpe ${index + 1}</span>
+                <strong>${moveName ? formatName(moveName) : "Escolher golpe"}</strong>
+                ${moveType ? `<span class="type-tag type-${escapeHTML(moveType)}">${typeLabel(moveType)}</span>` : ""}
+            </button>`;
+        }).join("");
+        pendingMoveButtons.querySelectorAll("[data-open-move-picker]").forEach((button) => {
+            button.addEventListener("click", openMovePicker);
+        });
+        const canConfirm = teamModes[pickerTarget.teamIndex] !== "manual" || pendingMoves.length === 4;
+        const currentSelection = pokemonTeams[pickerTarget.teamIndex][pickerTarget.slotIndex];
+        document.querySelector("#confirm-pokemon-selection").disabled = !canConfirm;
+        document.querySelector("#confirm-pokemon-selection").textContent =
+            currentSelection ? "Salvar configuração" : "Adicionar ao time";
+        pokemonDetailMessage.textContent = canConfirm
+            ? ""
+            : "No modo manual, escolha quatro golpes antes de adicionar o Pokémon.";
+    }
+
+    function previewPokemon(entry, pokemon) {
+        if (!pickerTarget) return;
+        const currentSlot = pokemonTeams[pickerTarget.teamIndex][pickerTarget.slotIndex];
+        const isCurrentSelection = currentSlot?.entry.id === entry.id;
+        pendingPokemon = { entry, pokemon };
+        pendingHeldItem = isCurrentSelection ? currentSlot.heldItem : null;
+        pendingMoves = isCurrentSelection ? [...currentSlot.selectedMoves] : [];
+        pendingMoveDetails = isCurrentSelection ? { ...currentSlot.moveDetails } : {};
+        pokemonDetailMessage.textContent = "";
+        showPickerMode("details");
+        renderPokemonDetail();
+    }
+
     function openPokemonPicker(teamIndex, slotIndex) {
         pickerTarget = { teamIndex, slotIndex };
+        pendingPokemon = null;
+        pendingHeldItem = null;
+        pendingMoves = [];
+        pendingMoveDetails = {};
         pickerPage = 1;
         pickerSearch.value = "";
         clearTimeout(pickerSearchTimer);
-        pickerContext.textContent = `Escolha um Pokémon para a vaga ${slotIndex + 1} do Time ${teamIndex + 1}.`;
+        showPickerMode("list");
         pickerDialog.showModal();
         renderPokemonPicker();
         pickerSearch.focus();
     }
 
-    function choosePokemon(entry) {
-        if (!pickerTarget) return;
+    function openPokemonSlot(teamIndex, slotIndex) {
+        const slot = pokemonTeams[teamIndex][slotIndex];
+        if (!slot?.pokemon) {
+            openPokemonPicker(teamIndex, slotIndex);
+            return;
+        }
+        pickerTarget = { teamIndex, slotIndex };
+        pendingPokemon = { entry: slot.entry, pokemon: slot.pokemon };
+        pendingHeldItem = slot.heldItem;
+        pendingMoves = [...slot.selectedMoves];
+        pendingMoveDetails = { ...slot.moveDetails };
+        showPickerMode("details");
+        pickerDialog.showModal();
+        renderPokemonDetail();
+    }
+
+    function choosePokemon(entry, pokemon) {
+        previewPokemon(entry, pokemon);
+    }
+
+    function openItemPicker() {
+        showPickerMode("items");
+        itemPickerGrid.innerHTML = itemsForPokemon(pendingPokemon.entry.name).map(({ name, title, description }) => {
+            const selected = (pendingHeldItem || "") === name;
+            const image = name
+                ? `<img src="${escapeHTML(itemSpriteUrl(name))}" alt="" onerror="this.hidden = true">`
+                : '<span class="item-picker-empty-icon" aria-hidden="true">—</span>';
+            return `<button class="item-picker-option ${selected ? "is-selected" : ""}" type="button"
+                data-held-item="${escapeHTML(name)}" aria-pressed="${selected}">
+                ${image}
+                <span class="item-picker-option-copy">
+                    <strong>${escapeHTML(title)}</strong>
+                    <small>${escapeHTML(description)}</small>
+                </span>
+                <span class="item-picker-check">${selected ? "Selecionado" : "Escolher"}</span>
+            </button>`;
+        }).join("");
+        itemPickerGrid.querySelectorAll("[data-held-item]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const item = button.dataset.heldItem || null;
+                pendingHeldItem = item;
+                showPickerMode("details");
+                renderPokemonDetail();
+            });
+        });
+    }
+
+    function openMovePicker() {
+        movePickerPage = 1;
+        movePickerSearch.value = "";
+        movePickerMessage.textContent = "";
+        showPickerMode("moves");
+        if (!pickerDialog.open) pickerDialog.showModal();
+        renderMovePicker();
+        movePickerSearch.focus();
+    }
+
+    async function renderMovePicker() {
+        if (pickerMode !== "moves" || !pendingPokemon) return;
+        const requestVersion = ++movePickerRequestVersion;
+        const query = movePickerSearch.value.trim().toLowerCase();
+        const allMoves = uniqueMoves(pendingPokemon.pokemon.moves);
+        const results = allMoves.filter(({ move }) => !query || move.name.includes(query));
+        const pageSize = window.PokedexApp.config.pageSize;
+        const pageCount = Math.max(1, Math.ceil(results.length / pageSize));
+        movePickerPage = Math.min(movePickerPage, pageCount);
+        const pageItems = results.slice((movePickerPage - 1) * pageSize, movePickerPage * pageSize);
+        movePickerList.replaceChildren();
+        movePickerPagination.hidden = results.length <= pageSize;
+        movePickerPrev.disabled = movePickerPage <= 1;
+        movePickerNext.disabled = movePickerPage >= pageCount;
+        movePickerPageLabel.textContent = `Página ${movePickerPage} de ${pageCount}`;
+        movePickerConfirm.textContent = `Concluir escolha (${pendingMoves.length}/4)`;
+        movePickerConfirm.disabled = pendingMoves.length !== 4;
+        movePickerMessage.textContent = "";
+        if (!results.length) {
+            movePickerCount.textContent = "Nenhum golpe encontrado.";
+            return;
+        }
+        movePickerCount.textContent = `Carregando golpes... ${pendingMoves.length}/4 selecionados`;
+        try {
+            const details = await mapWithConcurrency(pageItems, 6, ({ move }) => api.getMove(move.url));
+            if (requestVersion !== movePickerRequestVersion || pickerMode !== "moves") return;
+            pageItems.forEach((entry, index) => {
+                const detailsForMove = details[index];
+                const moveName = entry.move.name;
+                if (pendingMoves.includes(moveName)) pendingMoveDetails[moveName] = detailsForMove;
+                const selected = pendingMoves.includes(moveName);
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = `move-picker-option ${selected ? "is-selected" : ""}`;
+                button.setAttribute("aria-pressed", String(selected));
+                button.innerHTML = `<span class="move-picker-option-state">${selected ? "✓" : "+"}</span>
+                    ${renderMovePreview(detailsForMove)}`;
+                button.addEventListener("click", () => {
+                    const selectedIndex = pendingMoves.indexOf(moveName);
+                    if (selectedIndex >= 0) {
+                        pendingMoves.splice(selectedIndex, 1);
+                    } else if (pendingMoves.length >= 4) {
+                        movePickerMessage.textContent = "Você já selecionou quatro golpes. Remova um antes de escolher outro.";
+                        return;
+                    } else {
+                        pendingMoves.push(moveName);
+                    }
+                    pendingMoveDetails[moveName] = detailsForMove;
+                    renderPokemonDetail();
+                    renderMovePicker();
+                });
+                movePickerList.append(button);
+            });
+            movePickerCount.textContent = `${results.length.toLocaleString("pt-BR")} golpes disponíveis · ${pendingMoves.length}/4 selecionados`;
+            movePickerConfirm.textContent = `Concluir escolha (${pendingMoves.length}/4)`;
+            movePickerConfirm.disabled = pendingMoves.length !== 4;
+        } catch (error) {
+            if (requestVersion !== movePickerRequestVersion) return;
+            console.error(`Erro ao carregar golpes de ${pendingPokemon.entry.name}:`, error);
+            movePickerCount.textContent = "Não foi possível carregar os detalhes dos golpes.";
+            movePickerMessage.textContent = "Verifique sua conexão e tente novamente.";
+        }
+    }
+
+    function confirmMoveSelection() {
+        if (pendingMoves.length !== 4) {
+            movePickerMessage.textContent = "Escolha exatamente quatro golpes para continuar.";
+            return;
+        }
+        showPickerMode("details");
+        renderPokemonDetail();
+    }
+
+    function confirmPokemonSelection() {
+        if (!pickerTarget || !pendingPokemon) return;
+        if (teamModes[pickerTarget.teamIndex] === "manual" && pendingMoves.length !== 4) {
+            pokemonDetailMessage.textContent = "Escolha quatro golpes antes de adicionar o Pokémon ao time.";
+            return;
+        }
         const { teamIndex, slotIndex } = pickerTarget;
+        const selection = {
+            ...pendingPokemon,
+            heldItem: pendingHeldItem,
+            selectedMoves: pendingMoves,
+            moveDetails: pendingMoveDetails
+        };
         pickerDialog.close();
-        selectPokemon(teamIndex, slotIndex, entry);
+        selectPokemon(teamIndex, slotIndex, selection);
     }
 
     function validateTeams() {
@@ -513,6 +963,22 @@ window.PokedexApp.battle = (() => {
         try {
             const chosenMoves = pokemonTeams.map((team, teamIndex) =>
                 team.map((slot) => chooseMoves(slot, teamModes[teamIndex])));
+            const megaForms = new Map(pokemonList.map((entry) => [entry.name, entry]));
+            const selectedMegaNames = pokemonTeams.flatMap((team) =>
+                team.map((slot) => MEGA_STONES[slot.heldItem]).filter(Boolean));
+            const uniqueMegaNames = [...new Set(selectedMegaNames)];
+            const megaDetails = await mapWithConcurrency(uniqueMegaNames, 6, async (name) => {
+                const entry = megaForms.get(name);
+                if (!entry) throw new Error(`Forma Mega indisponível: ${name}`);
+                return [name, await api.getPokemon(entry.id)];
+            });
+            const megaPokemonByName = new Map(megaDetails);
+            const eviolitePokemon = pokemonTeams.flatMap((team) =>
+                team.map((slot) => slot.heldItem === "eviolite" ? slot.pokemon : null).filter(Boolean));
+            const evioliteEligibility = await mapWithConcurrency(
+                eviolitePokemon, 6, async (pokemon) => [pokemon.species.name, await isEvioliteEligible(pokemon)]
+            );
+            const evioliteEligibilityBySpecies = new Map(evioliteEligibility);
             const allMoves = chosenMoves.reduce((all, team) => all.concat(...team), []);
             const uniqueMoveEntries = [...new Map(allMoves.map((entry) => [entry.move.url, entry])).values()];
             const typeNames = ALL_TYPE_NAMES;
@@ -539,6 +1005,12 @@ window.PokedexApp.battle = (() => {
                         teamIndex,
                         entry: slot.entry,
                         pokemon: slot.pokemon,
+                        megaPokemon: MEGA_STONES[slot.heldItem]
+                            ? megaPokemonByName.get(MEGA_STONES[slot.heldItem])
+                            : null,
+                        heldItem: slot.heldItem || null,
+                        evioliteEligible: evioliteEligibilityBySpecies.get(slot.pokemon.species.name) || false,
+                        megaEvolved: false,
                         originalTypes: slot.pokemon.types.map(({ type }) => type.name),
                         currentTypes: slot.pokemon.types.map(({ type }) => type.name),
                         moves,
@@ -571,6 +1043,8 @@ window.PokedexApp.battle = (() => {
                     (_, index) => index
                 )),
                 pendingActions: [[], []],
+                pendingMega: new Set(),
+                megaUsed: [false, false],
                 pendingTarget: null,
                 lastExecutedMove: null,
                 currentPlayer: 0,
@@ -646,14 +1120,19 @@ window.PokedexApp.battle = (() => {
         const types = getMemberTypeNames(member)
             .map((type) => `<span class="type-tag type-${escapeHTML(type)}">${typeLabel(type)}</span>`).join("")
             || '<span class="type-tag">Sem tipo</span>';
-        return `<article class="arena-pokemon ${isCurrentAttacker ? "is-current-attacker" : ""} ${effects?.attackers.has(effectKey) ? "is-attacking" : ""} ${effects?.hitMembers.has(effectKey) ? "is-hit" : ""} ${critical ? "is-critical" : ""}"
+        const displayName = member.megaEvolved ? member.pokemon.name : member.entry.name;
+        return `<article class="arena-pokemon ${isCurrentAttacker ? "is-current-attacker" : ""} ${effects?.attackers.has(effectKey) ? "is-attacking" : ""} ${effects?.hitMembers.has(effectKey) ? "is-hit" : ""} ${effects?.megaEvolved.has(effectKey) ? "is-mega-evolving" : ""} ${critical ? "is-critical" : ""}"
             data-team-index="${teamIndex}" data-active-slot="${activeSlot}">
             <div class="arena-pokemon-art">
-                <img src="${escapeHTML(imageUrl(member.pokemon))}" alt="${formatName(member.entry.name)}">
+                <img src="${escapeHTML(imageUrl(member.pokemon))}" alt="${formatName(displayName)}">
             </div>
             <div class="arena-pokemon-info">
                 <span class="arena-pokemon-number">#${String(member.entry.id).padStart(4, "0")}</span>
-                <strong class="arena-pokemon-name">${formatName(member.entry.name)}</strong>
+                <strong class="arena-pokemon-name">${formatName(displayName)}</strong>
+                ${member.heldItem ? `<span class="arena-held-item">
+                    <img src="${escapeHTML(itemSpriteUrl(member.heldItem))}" alt="" onerror="this.hidden = true">
+                    ${formatName(member.heldItem.replace(/_/g, "-"))}
+                </span>` : ""}
                 <span class="arena-pokemon-types">${types}</span>
                 <div class="battle-hp-track"><span class="battle-hp-fill ${critical ? "low" : ""} ${effects?.hitMembers.has(effectKey) ? "hp-draining" : ""}"
                     style="--hp-from:${hpBefore / member.maxHp};--hp-to:${member.currentHp / member.maxHp}"></span></div>
@@ -892,7 +1371,7 @@ window.PokedexApp.battle = (() => {
                 }
                 outgoing.confusionTurns = 0;
                 outgoing.moveEffects = {};
-                setMemberTypeNames(outgoing, outgoing.originalTypes);
+                setMemberTypeNames(outgoing, memberResetTypes(outgoing));
                 outgoing.moves = [...outgoing.originalMoves];
                 outgoing.transformedStats = null;
                 outgoing.protectionChain = 0;
@@ -919,7 +1398,7 @@ window.PokedexApp.battle = (() => {
         game.teams[teamIndex].members[attackerIndex].moveEffects = {};
         setMemberTypeNames(
             game.teams[teamIndex].members[attackerIndex],
-            game.teams[teamIndex].members[attackerIndex].originalTypes
+            memberResetTypes(game.teams[teamIndex].members[attackerIndex])
         );
         game.teams[teamIndex].members[attackerIndex].moves =
             [...game.teams[teamIndex].members[attackerIndex].originalMoves];
@@ -1040,6 +1519,9 @@ window.PokedexApp.battle = (() => {
         }
 
         const { memberIndex, activeSlot, member } = actor;
+        const megaKey = `${teamIndex}:${activeSlot}`;
+        const megaSelected = game.pendingMega.has(megaKey);
+        const canMega = canMegaEvolve(member, teamIndex, activeSlot);
         const moves = member.moves.map((move, moveIndex) => {
             const power = getMovePower(move, member);
             return `
@@ -1055,6 +1537,11 @@ window.PokedexApp.battle = (() => {
                 <div class="turn-action-heading">
                     <strong>${formatName(member.entry.name)}</strong>
                 </div>
+                ${member.megaEvolved ? `<p class="mega-status">${formatName(member.pokemon.name)} está Mega Evoluído.</p>` : ""}
+                ${canMega || megaSelected ? `<button class="mega-evolve-button ${megaSelected ? "is-selected" : ""}" type="button"
+                    data-toggle-mega="${activeSlot}" aria-pressed="${megaSelected}">
+                    ${megaSelected ? "Mega Evolução ativada · clique para cancelar" : `Mega Evoluir com ${formatName(member.heldItem.replace(/_/g, "-"))}`}
+                </button>` : ""}
                 <div class="move-choice-grid">${moves}</div>
                 <button class="switch-button" type="button" data-switch-active="${activeSlot}" ${!canSwitch || switchLocked ? "disabled" : ""}
                     ${switchLocked ? 'title="Fairy Lock impede trocas neste turno"' : ""}>
@@ -1072,11 +1559,13 @@ window.PokedexApp.battle = (() => {
                 const activeSlot = Number(button.dataset.activeSlot);
                 const memberIndex = game.active[teamIndex][activeSlot];
                 const member = game.teams[teamIndex].members[memberIndex];
+                const megaKey = `${teamIndex}:${activeSlot}`;
                 const action = {
                     teamIndex,
                     activeSlot,
                     attackerIndex: memberIndex,
-                    move: member.moves[Number(button.dataset.useMove)]
+                    move: member.moves[Number(button.dataset.useMove)],
+                    megaEvolve: game.pendingMega.has(megaKey)
                 };
                 const targetName = action.move.target?.name;
                 if (action.move.name === "after-you" && game.format === 1) {
@@ -1102,14 +1591,33 @@ window.PokedexApp.battle = (() => {
                 }
             });
         });
+        turnControls.querySelectorAll("[data-toggle-mega]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const activeSlot = Number(button.dataset.toggleMega);
+                const megaKey = `${teamIndex}:${activeSlot}`;
+                if (game.pendingMega.has(megaKey)) game.pendingMega.delete(megaKey);
+                else {
+                    const memberIndex = game.active[teamIndex][activeSlot];
+                    const member = game.teams[teamIndex].members[memberIndex];
+                    if (!canMegaEvolve(member, teamIndex, activeSlot)) return;
+                    game.pendingMega.add(megaKey);
+                }
+                renderActionPanel();
+            });
+        });
         turnControls.querySelectorAll("[data-switch-active]").forEach((button) => {
-            button.addEventListener("click", () => openSwitchPicker(teamIndex, Number(button.dataset.switchActive)));
+            button.addEventListener("click", () => {
+                const activeSlot = Number(button.dataset.switchActive);
+                game.pendingMega.delete(`${teamIndex}:${activeSlot}`);
+                openSwitchPicker(teamIndex, activeSlot);
+            });
         });
     }
 
     function registerAction(action) {
         const actions = game.pendingActions[action.teamIndex];
         if (actions.some(({ activeSlot }) => activeSlot === action.activeSlot)) return;
+        game.pendingMega.delete(`${action.teamIndex}:${action.activeSlot}`);
         actions.push(action);
         if (actions.length < getActiveActors(action.teamIndex).length) {
             renderActionPanel();
@@ -1246,6 +1754,11 @@ window.PokedexApp.battle = (() => {
         if (member.status?.name === "burn" && statName === "attack") value *= 0.5;
         if (member.status?.name === "paralysis" && statName === "speed") value *= 0.5;
         if (statName === "speed" && game.fieldEffects.tailwindTurns[member.teamIndex] > 0) value *= 2;
+        if (member.heldItem === "assault_vest" && statName === "special-defense"
+            || member.heldItem === "eviolite" && member.evioliteEligible
+                && ["defense", "special-defense"].includes(statName)) {
+            value *= 1.5;
+        }
         return Math.max(1, Math.floor(value));
     }
 
@@ -1286,12 +1799,30 @@ window.PokedexApp.battle = (() => {
         const base = Math.floor((((2 * BATTLE_LEVEL / 5 + 2) * power * attack / defense) / 50) + 2);
         const stab = getMemberTypeNames(attacker).includes(moveType) ? 1.5 : 1;
         const fieldMultiplier = getMoveDamageMultiplier(attacker, defender, move, moveType, critical);
+        const itemMultiplier = getHeldItemDamageMultiplier(attacker, move, moveType, effectiveness);
         const criticalMultiplier = critical ? 1.5 : 1;
         return {
             amount: Math.max(1, Math.floor(base * stab * effectiveness * fieldMultiplier * criticalMultiplier
-                * (0.85 + Math.random() * 0.15))),
+                * itemMultiplier * (0.85 + Math.random() * 0.15))),
             critical
         };
+    }
+
+    function getHeldItemDamageMultiplier(attacker, move, moveType, effectiveness) {
+        let multiplier = 1;
+        if (attacker.heldItem === "life_orb") multiplier *= 1.3;
+        if (attacker.heldItem === "expert_belt" && effectiveness > 1) multiplier *= 1.2;
+        if (attacker.heldItem === "muscle_band" && move.damage_class.name === "physical") multiplier *= 1.1;
+        if (attacker.heldItem === "wise_glasses" && move.damage_class.name === "special") multiplier *= 1.1;
+        const typeItems = {
+            charcoal: "fire", mystic_water: "water", miracle_seed: "grass", magnet: "electric",
+            never_melt_ice: "ice", black_belt: "fighting", poison_barb: "poison", soft_sand: "ground",
+            sharp_beak: "flying", twisted_spoon: "psychic", silver_powder: "bug", hard_stone: "rock",
+            spell_tag: "ghost", dragon_fang: "dragon", black_glasses: "dark", metal_coat: "steel",
+            pixie_plate: "fairy"
+        };
+        if (typeItems[attacker.heldItem] === moveType) multiplier *= 1.2;
+        return multiplier;
     }
 
     function getMovePower(move, attacker, defender) {
@@ -1606,6 +2137,7 @@ window.PokedexApp.battle = (() => {
 
     function applyEntryHazards(teamIndex, memberIndex) {
         const member = game.teams[teamIndex].members[memberIndex];
+        if (member.heldItem === "heavy_duty_boots") return;
         const hazards = game.fieldEffects.hazards[teamIndex];
         if (member.currentHp <= 0) return;
         const types = getMemberTypeNames(member);
@@ -1640,6 +2172,7 @@ window.PokedexApp.battle = (() => {
             const ailment = hazards.toxicSpikes > 1 ? "toxic" : "poison";
             member.status = { name: ailment, turnsRemaining: null, toxicStage: ailment === "toxic" ? 1 : 0 };
             game.log.push(`${plainName(member.entry.name)} ficou ${ailment === "toxic" ? "gravemente envenenado" : "envenenado"} pelas Toxic Spikes.`);
+            consumeLumBerry(member);
         }
         if (member.currentHp > 0 && grounded && hazards.stickyWeb) {
             const current = member.statStages.speed || 0;
@@ -1852,11 +2385,23 @@ window.PokedexApp.battle = (() => {
             sleep: "dormindo",
             freeze: "congelado"
         }[ailment]}.`);
+        consumeLumBerry(member);
+        return true;
+    }
+
+    function consumeLumBerry(member) {
+        if (member.heldItem !== "lum_berry" || !member.status) return false;
+        member.status = null;
+        member.heldItem = null;
+        game.log.push(`${plainName(member.entry.name)} consumiu Lum Berry e curou sua condição de status.`);
         return true;
     }
 
     function moveRestriction(member, move) {
         const effects = member.moveEffects || {};
+        if (member.heldItem === "assault_vest" && move.damage_class.name === "status") {
+            return "Assault Vest impede golpes de status.";
+        }
         if (effects.disabledMove === move.name && effects.disableTurns > 0) return "Golpe bloqueado por Disable.";
         if (effects.encoreTurns > 0 && effects.encoreMove && effects.encoreMove !== move.name) {
             return `Encore obriga a repetir ${formatName(effects.encoreMove)}.`;
@@ -2082,6 +2627,7 @@ window.PokedexApp.battle = (() => {
             member.currentHp = member.maxHp;
             member.status = { name: "sleep", turnsRemaining: 3, toxicStage: 0 };
             game.log.push(`${memberName} recuperou todo o HP e adormeceu com Rest.`);
+            consumeLumBerry(member);
             return true;
         }
         if (name === "refresh") {
@@ -2107,6 +2653,7 @@ window.PokedexApp.battle = (() => {
             member.status = source.status;
             source.status = null;
             game.log.push(`${sourceName} transferiu sua condição de status para ${memberName}.`);
+            consumeLumBerry(member);
             return true;
         }
         if (name === "tri-attack") {
@@ -2382,6 +2929,7 @@ window.PokedexApp.battle = (() => {
                     if (effects[timer] > 0) effects[timer]--;
                     if (effects[timer] === 0) delete effects[appliedTurn];
                 });
+                applyHeldItemEndTurn(teamIndex, memberIndex);
             });
         });
         game.fieldEffects.wishes.forEach((teamWishes, teamIndex) => {
@@ -2408,6 +2956,46 @@ window.PokedexApp.battle = (() => {
                 delete member.moveEffects.roostOriginalTypes;
             }
         }));
+    }
+
+    function applyHeldItemEndTurn(teamIndex, memberIndex) {
+        const member = game.teams[teamIndex].members[memberIndex];
+        if (member.currentHp <= 0 || !member.heldItem) return;
+        const name = plainName(member.entry.name);
+        if (member.heldItem === "flame_orb" && !member.status
+            && !getMemberTypeNames(member).includes("fire")) {
+            member.status = { name: "burn", turnsRemaining: 0, toxicStage: 0 };
+            game.log.push(`${name} foi queimado pelo Flame Orb.`);
+        } else if (member.heldItem === "toxic_orb" && !member.status
+            && !getMemberTypeNames(member).some((type) => ["poison", "steel"].includes(type))) {
+            member.status = { name: "toxic", turnsRemaining: 0, toxicStage: 1 };
+            game.log.push(`${name} foi gravemente envenenado pelo Toxic Orb.`);
+        }
+
+        consumeLumBerry(member);
+        if (member.currentHp <= 0) return;
+        if (member.currentHp <= member.maxHp / 2
+            && ["sitrus_berry", "oran_berry"].includes(member.heldItem)) {
+            const amount = member.heldItem === "sitrus_berry" ? member.maxHp / 4 : 10;
+            const berry = member.heldItem === "sitrus_berry" ? "Sitrus Berry" : "Oran Berry";
+            const healed = healMember(member, amount);
+            member.heldItem = null;
+            if (healed) game.log.push(`${name} consumiu ${berry} e recuperou ${healed} HP.`);
+        }
+        if (member.currentHp > 0 && member.heldItem === "leftovers") {
+            const healed = healMember(member, member.maxHp / 16);
+            if (healed) game.log.push(`${name} recuperou ${healed} HP com Leftovers.`);
+        }
+        if (member.currentHp > 0 && member.heldItem === "black_sludge") {
+            if (getMemberTypeNames(member).includes("poison")) {
+                const healed = healMember(member, member.maxHp / 16);
+                if (healed) game.log.push(`${name} recuperou ${healed} HP com Black Sludge.`);
+            } else {
+                const damage = Math.max(1, Math.floor(member.maxHp / 8));
+                recordDamage(teamIndex, memberIndex, damage);
+                game.log.push(`${name} sofreu ${damage} de dano por Black Sludge.`);
+            }
+        }
     }
 
     function decrementFieldEffects() {
@@ -2573,6 +3161,7 @@ window.PokedexApp.battle = (() => {
         let successful = false;
         let userStatsApplied = false;
         let totalDamage = 0;
+        let totalHitDamage = 0;
 
         for (const target of targets) {
             if (target.member.currentHp <= 0) continue;
@@ -2663,6 +3252,14 @@ window.PokedexApp.battle = (() => {
                 const endured = !substitute
                     && target.member.enduredTurn === game.turn && damage >= target.member.currentHp;
                 if (endured) damage = Math.max(0, target.member.currentHp - 1);
+                const sashActivated = !substitute && !endured
+                    && target.member.heldItem === "focus_sash"
+                    && target.member.currentHp === target.member.maxHp
+                    && damage >= target.member.currentHp;
+                if (sashActivated) {
+                    damage = Math.max(0, target.member.currentHp - 1);
+                    target.member.heldItem = null;
+                }
                 let dealt = 0;
                 let substituteAbsorbed = 0;
                 if (substitute) {
@@ -2673,6 +3270,7 @@ window.PokedexApp.battle = (() => {
                 } else {
                     dealt = recordDamage(target.teamIndex, target.memberIndex, damage);
                 }
+                totalHitDamage += dealt + substituteAbsorbed;
                 if (dealt > 0) {
                     target.member.damageTakenThisTurn = dealt;
                     target.member.lastDamageClassThisTurn = move.damage_class.name;
@@ -2685,9 +3283,24 @@ window.PokedexApp.battle = (() => {
                 if (endured) message += ` ${plainName(target.member.entry.name)} resistiu com 1 HP graças a Endure.`;
                 if (hitResults.some(({ critical }) => critical)) message += " Acerto crítico!";
                 if (hitCount > 1) message += ` Acertou ${hitCount} vezes.`;
+                if (sashActivated) message += ` Focus Sash permitiu que ${plainName(target.member.entry.name)} resistisse com 1 HP.`;
                 if (effectiveness > 1) message += " Foi super efetivo!";
                 else if (effectiveness < 1) message += " Não foi muito efetivo.";
                 game.log.push(message);
+                if (dealt > 0 && effectiveness > 1 && target.member.heldItem === "weakness_policy") {
+                    target.member.statStages.attack = Math.min(6, (target.member.statStages.attack || 0) + 2);
+                    target.member.statStages["special-attack"] =
+                        Math.min(6, (target.member.statStages["special-attack"] || 0) + 2);
+                    target.member.heldItem = null;
+                    game.log.push(`${plainName(target.member.entry.name)} ativou Weakness Policy e aumentou Ataque e Ataque Especial.`);
+                }
+                if (dealt > 0 && move.flags?.some(({ name }) => name === "contact")
+                    && target.member.heldItem === "rocky_helmet" && attacker.currentHp > 0) {
+                    const recoil = Math.max(1, Math.floor(attacker.maxHp / 6));
+                    const helmetDamage = recordDamage(action.teamIndex, action.attackerIndex, recoil);
+                    game.log.push(`Rocky Helmet causou ${helmetDamage} de dano a ${attackerName}.`);
+                    if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo Rocky Helmet.`);
+                }
                 if (target.member.currentHp === 0) game.log.push(`${plainName(target.member.entry.name)} foi derrotado.`);
                 if (target.member.currentHp === 0
                     && target.member.moveEffects?.destinyBondTurn === game.turn
@@ -2777,6 +3390,16 @@ window.PokedexApp.battle = (() => {
             game.log.push(`${attackerName} recebeu ${received} de dano de recuo.`);
             if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo recuo.`);
         }
+        if (totalHitDamage > 0 && attacker.currentHp > 0 && attacker.heldItem === "shell_bell") {
+            const healed = healMember(attacker, totalHitDamage / 8);
+            if (healed) game.log.push(`${attackerName} recuperou ${healed} HP com Shell Bell.`);
+        }
+        if (totalHitDamage > 0 && attacker.currentHp > 0 && attacker.heldItem === "life_orb") {
+            const recoil = Math.max(1, Math.floor(attacker.maxHp / 10));
+            const received = recordDamage(action.teamIndex, action.attackerIndex, recoil);
+            game.log.push(`${attackerName} perdeu ${received} HP pelo recuo de Life Orb.`);
+            if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo recuo de Life Orb.`);
+        }
 
         if (/user faints\b|causes the user to faint|user faints upon/i.test(effectText) && attacker.currentHp > 0) {
             const received = recordDamage(action.teamIndex, action.attackerIndex, attacker.currentHp);
@@ -2819,17 +3442,45 @@ window.PokedexApp.battle = (() => {
         });
     }
 
+    function megaEvolveMember(teamIndex, memberIndex) {
+        const member = game.teams[teamIndex].members[memberIndex];
+        if (!member.megaPokemon || !member.heldItem || game.megaUsed[teamIndex]
+            || MEGA_STONES[member.heldItem] !== member.megaPokemon.name) return false;
+        member.pokemon = member.megaPokemon;
+        member.megaEvolved = true;
+        member.megaTypes = member.pokemon.types.map(({ type }) => type.name);
+        setMemberTypeNames(member, member.megaTypes);
+        member.heldItem = null;
+        game.megaUsed[teamIndex] = true;
+        game.visualEffects.megaEvolved.add(`${teamIndex}:${memberIndex}`);
+        game.log.push(`${plainName(member.entry.name)} Mega Evoluiu para ${plainName(member.pokemon.name)}!`);
+        return true;
+    }
+
     async function resolveTurn() {
         const actions = game.pendingActions.flat().filter(Boolean);
         game.visualEffects = {
             attackers: new Set(),
             hitMembers: new Set(),
-            damagedBefore: new Map()
+            damagedBefore: new Map(),
+            megaEvolved: new Set()
         };
         game.teams.forEach((team) => team.members.forEach((member) => {
             member.damageTakenThisTurn = 0;
             member.lastDamageClassThisTurn = null;
         }));
+        actions.filter((action) => action.megaEvolve).forEach((action) => {
+            if (game.active[action.teamIndex][action.activeSlot] !== action.attackerIndex
+                || !megaEvolveMember(action.teamIndex, action.attackerIndex)) {
+                game.log.push(`${plainName(game.teams[action.teamIndex].members[action.attackerIndex].entry.name)} não pôde Mega Evoluir.`);
+                action.megaEvolve = false;
+            }
+        });
+        if (game.visualEffects.megaEvolved.size) {
+            renderBattle(true);
+            await waitForAnimation(1500);
+            game.visualEffects.megaEvolved.clear();
+        }
         actions.filter((action) => Number.isInteger(action.switchToIndex)).forEach((action) => {
             if (game.fieldEffects.fairyLockTurn === game.turn) {
                 game.log.push("Uma troca foi impedida por Fairy Lock.");
@@ -2845,7 +3496,7 @@ window.PokedexApp.battle = (() => {
             outgoing.statStages = {};
             outgoing.confusionTurns = 0;
             outgoing.moveEffects = {};
-            setMemberTypeNames(outgoing, outgoing.originalTypes);
+            setMemberTypeNames(outgoing, memberResetTypes(outgoing));
             outgoing.moves = [...outgoing.originalMoves];
             outgoing.transformedStats = null;
             outgoing.protectionChain = 0;
@@ -2929,6 +3580,7 @@ window.PokedexApp.battle = (() => {
             game.turn++;
         }
         game.pendingActions = [[], []];
+        game.pendingMega.clear();
         game.pendingTarget = null;
         game.currentPlayer = 0;
         game.currentResolution = null;
@@ -2950,7 +3602,8 @@ window.PokedexApp.battle = (() => {
             pokemonList = await api.getPokemonList();
             renderTeamBuilder();
             startButton.disabled = false;
-            setSetupMessage(`${pokemonList.length.toLocaleString("pt-BR")} Pokémon disponíveis para seleção.`, false);
+            const selectableCount = pokemonList.filter(isSelectablePokemon).length;
+            setSetupMessage(`${selectableCount.toLocaleString("pt-BR")} Pokémon disponíveis para seleção.`, false);
         } catch (error) {
             console.error("Erro ao carregar opções de Pokémon para a batalha:", error);
             setupMessage.innerHTML = 'Não foi possível carregar a lista de Pokémon. <button class="retry-pokemon" type="button">Tentar novamente</button>';
@@ -2977,8 +3630,14 @@ window.PokedexApp.battle = (() => {
     });
     pickerDialog.addEventListener("close", () => {
         clearTimeout(pickerSearchTimer);
+        clearTimeout(movePickerSearchTimer);
         pickerRequestVersion++;
+        movePickerRequestVersion++;
         pickerTarget = null;
+        pendingPokemon = null;
+        pendingHeldItem = null;
+        pendingMoves = [];
+        pendingMoveDetails = {};
     });
     switchDialog.addEventListener("close", () => {
         if (!switchDialog.open) switchTarget = null;
@@ -2992,6 +3651,40 @@ window.PokedexApp.battle = (() => {
             pickerPage = 1;
             renderPokemonPicker();
         }, 180);
+    });
+    pickerGeneration.addEventListener("change", () => {
+        pickerPage = 1;
+        renderPokemonPicker();
+    });
+    document.querySelector("#pokemon-detail-back").addEventListener("click", () => {
+        showPickerMode("list");
+        renderPokemonPicker();
+    });
+    document.querySelector("#confirm-pokemon-selection").addEventListener("click", confirmPokemonSelection);
+    document.querySelector("#item-picker-back").addEventListener("click", () => {
+        showPickerMode("details");
+        renderPokemonDetail();
+    });
+    document.querySelector("#move-picker-back").addEventListener("click", () => {
+        showPickerMode("details");
+        renderPokemonDetail();
+    });
+    movePickerConfirm.addEventListener("click", confirmMoveSelection);
+    movePickerSearch.addEventListener("input", () => {
+        clearTimeout(movePickerSearchTimer);
+        movePickerSearchTimer = setTimeout(() => {
+            movePickerPage = 1;
+            renderMovePicker();
+        }, 180);
+    });
+    movePickerPrev.addEventListener("click", () => {
+        if (movePickerPage <= 1) return;
+        movePickerPage--;
+        renderMovePicker();
+    });
+    movePickerNext.addEventListener("click", () => {
+        movePickerPage++;
+        renderMovePicker();
     });
     pickerPrev.addEventListener("click", () => {
         if (pickerPage <= 1) return;
