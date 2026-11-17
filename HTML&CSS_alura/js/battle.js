@@ -159,6 +159,12 @@ window.PokedexApp.battle = (() => {
     const battleMusicButton = document.querySelector("#battle-music-toggle");
     const battleSfxButton = document.querySelector("#battle-sfx-toggle");
     const battleAudioStatus = document.querySelector("#battle-audio-status");
+    const createOnlineRoomButton = document.querySelector("#create-online-room");
+    const joinOnlineRoomButton = document.querySelector("#join-online-room");
+    const onlineRoomInput = document.querySelector("#online-room-code");
+    const copyOnlineRoomButton = document.querySelector("#copy-online-room");
+    const leaveOnlineRoomButton = document.querySelector("#leave-online-room");
+    const onlineLobbyStatus = document.querySelector("#online-lobby-status");
     const pickerDialog = document.querySelector("#pokemon-picker-dialog");
     const pickerTitle = document.querySelector("#pokemon-picker-title");
     const pickerSearch = document.querySelector("#pokemon-picker-search");
@@ -180,11 +186,13 @@ window.PokedexApp.battle = (() => {
     const movePickerPrev = document.querySelector("#move-picker-prev");
     const movePickerNext = document.querySelector("#move-picker-next");
     let audioContext = null;
-    let musicTimer = null;
-    let musicNoteIndex = 0;
+    let battleMusicRequest = 0;
     let battleMusicEnabled = false;
     let soundEffectsEnabled = true;
-    const battleTheme = [261.63, 311.13, 392, 466.16, 392, 311.13, 233.08, 311.13];
+    const battleMusic = new Audio("./audio/battleMusic.mp3");
+    battleMusic.loop = true;
+    battleMusic.preload = "auto";
+    battleMusic.volume = 0.35;
 
     function updateBattleAudioControls() {
         battleMusicButton.textContent = `Música: ${battleMusicEnabled ? "ligada" : "desligada"}`;
@@ -246,34 +254,25 @@ window.PokedexApp.battle = (() => {
     }
 
     function stopBattleMusic() {
+        battleMusicRequest++;
+        battleMusic.pause();
+        battleMusic.currentTime = 0;
         battleMusicEnabled = false;
-        if (musicTimer !== null) {
-            window.clearInterval(musicTimer);
-            musicTimer = null;
-        }
         updateBattleAudioControls();
     }
 
     function startBattleMusic() {
-        const context = getAudioContext();
-        if (!context) return;
+        const request = ++battleMusicRequest;
         battleMusicEnabled = true;
-        musicNoteIndex = 0;
-        const scheduleNote = () => {
-            if (!battleMusicEnabled || context.state !== "running") return;
-            const startAt = context.currentTime + 0.03;
-            const frequency = battleTheme[musicNoteIndex % battleTheme.length];
-            playTone(context, frequency, startAt, 0.2, "triangle", 0.025);
-            if (musicNoteIndex % 4 === 0) {
-                playTone(context, frequency / 2, startAt, 0.34, "sine", 0.018);
-            }
-            musicNoteIndex++;
-        };
-        scheduleNote();
-        if (musicTimer !== null) window.clearInterval(musicTimer);
-        musicTimer = window.setInterval(scheduleNote, 240);
-        battleAudioStatus.textContent = "Música de batalha original ativada.";
+        battleAudioStatus.textContent = "Música de batalha ativada.";
         updateBattleAudioControls();
+        battleMusic.play().catch((error) => {
+            if (request !== battleMusicRequest) return;
+            console.error("Não foi possível reproduzir a música da batalha:", error);
+            battleMusicEnabled = false;
+            battleAudioStatus.textContent = "Não foi possível reproduzir a música da batalha.";
+            updateBattleAudioControls();
+        });
     }
     const movePickerMessage = document.querySelector("#move-picker-message");
     const movePickerConfirm = document.querySelector("#confirm-move-selection");
@@ -309,10 +308,365 @@ window.PokedexApp.battle = (() => {
     let renderedLogLength = 0;
     let switchTarget = null;
     let game = null;
+    let onlineSocket = null;
+    let socketIoClientPromise = null;
+    let onlineMode = false;
+    let onlineRoomCode = "";
+    let onlineRole = null;
+    let onlineTeamSubmitted = false;
+    let onlineTeamsLoading = false;
+    let onlineBattleStarted = false;
+    let onlineBattleReady = false;
+    let onlineWaitingForState = false;
+    let onlineForcedSwitchPending = false;
+    let pendingForcedSwitchResolution = null;
 
     function setSetupMessage(message, isError) {
         setupMessage.textContent = message;
         setupMessage.classList.toggle("error", Boolean(isError));
+    }
+
+    function setOnlineLobbyStatus(message, isError = false) {
+        onlineLobbyStatus.textContent = message;
+        onlineLobbyStatus.classList.toggle("error", isError);
+    }
+
+    function updateOnlineLobby() {
+        const joined = onlineMode && onlineRoomCode && Number.isInteger(onlineRole);
+        createOnlineRoomButton.hidden = joined;
+        onlineRoomInput.readOnly = joined;
+        joinOnlineRoomButton.hidden = joined;
+        copyOnlineRoomButton.hidden = !joined;
+        leaveOnlineRoomButton.hidden = !joined;
+        if (joined) onlineRoomInput.value = onlineRoomCode;
+        startButton.textContent = onlineMode
+            ? onlineTeamSubmitted ? "Aguardando adversário..." : "Enviar meu time"
+            : "Iniciar batalha";
+    }
+
+    function loadSocketIoClient() {
+        if (typeof window.io === "function") return Promise.resolve();
+        if (socketIoClientPromise) return socketIoClientPromise;
+        if (!["http:", "https:"].includes(window.location.protocol)) {
+            return Promise.reject(new Error("Abra a página pelo servidor Node.js para jogar online."));
+        }
+        socketIoClientPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "/socket.io/socket.io.js";
+            script.async = true;
+            script.onload = () => {
+                if (typeof window.io === "function") resolve();
+                else reject(new Error("O cliente Socket.IO não foi carregado pelo servidor."));
+            };
+            script.onerror = () => reject(new Error("Não foi possível carregar o cliente Socket.IO."));
+            document.head.append(script);
+        });
+        return socketIoClientPromise.catch((error) => {
+            socketIoClientPromise = null;
+            throw error;
+        });
+    }
+
+    function bindOnlineSocket(socket) {
+        socket.on("connect_error", (error) => {
+            console.error("Erro de conexão com a sala online:", error);
+            setOnlineLobbyStatus("Não foi possível conectar ao servidor online.", true);
+        });
+        socket.on("room:player-joined", () => {
+            setOnlineLobbyStatus("Amigo conectado. Monte seu time e envie para a sala.");
+        });
+        socket.on("room:player-left", () => {
+            setOnlineLobbyStatus("Seu adversário saiu da sala.", true);
+            if (onlineBattleStarted) {
+                onlineWaitingForState = true;
+                renderActionPanel();
+            }
+        });
+        socket.on("room:closed", ({ message }) => {
+            setOnlineLobbyStatus(message || "A sala foi encerrada.", true);
+            if (pendingForcedSwitchResolution) {
+                const resolve = pendingForcedSwitchResolution;
+                pendingForcedSwitchResolution = null;
+                resolve(false);
+            }
+            resetOnlineSession();
+        });
+        socket.on("room:teams-ready", (payload) => {
+            loadOnlineTeams(payload).catch((error) => {
+                console.error("Erro ao preparar os times online:", error);
+                setOnlineLobbyStatus("Não foi possível carregar os times da sala.", true);
+                onlineTeamsLoading = false;
+            });
+        });
+        socket.on("battle:ready", () => {
+            onlineBattleReady = true;
+            onlineWaitingForState = false;
+            onlineLobbyStatus.textContent = "";
+            renderBattle();
+        });
+        socket.on("battle:team-actions", (payload) => {
+            handleOnlineTeamActions(payload).catch((error) => {
+                console.error("Ação online inválida:", error);
+                setOnlineLobbyStatus("Não foi possível sincronizar a ação do adversário.", true);
+            });
+        });
+        socket.on("battle:state", (payload) => {
+            if (onlineRole !== 1 || !onlineBattleStarted) return;
+            try {
+                applyOnlineGameState(payload.state);
+                onlineWaitingForState = false;
+                onlineForcedSwitchPending = false;
+            } catch (error) {
+                console.error("Estado online inválido:", error);
+                setOnlineLobbyStatus("Não foi possível sincronizar o estado da batalha.", true);
+            }
+        });
+        socket.on("battle:visual-state", (payload) => {
+            if (onlineRole !== 1 || !onlineBattleStarted || !onlineBattleReady) return;
+            try {
+                applyOnlineGameState(payload.state, true);
+            } catch (error) {
+                console.error("Efeito online inválido:", error);
+                setOnlineLobbyStatus("Não foi possível sincronizar o efeito da batalha.", true);
+            }
+        });
+        socket.on("battle:forced-switch", (payload) => {
+            if (onlineRole !== 0 || !onlineBattleStarted) return;
+            try {
+                applyRemoteForcedSwitch(payload);
+            } catch (error) {
+                console.error("Troca online inválida:", error);
+                setOnlineLobbyStatus("Não foi possível sincronizar a troca do adversário.", true);
+            }
+        });
+        socket.on("battle:forced-switch-request", (payload) => {
+            if (onlineRole !== 1 || !onlineBattleStarted
+                || !Number.isInteger(payload?.activeSlot) || payload.activeSlot < 0
+                || payload.activeSlot >= game.format) return;
+            openSwitchPicker(1, payload.activeSlot, true, payload.moveName || "");
+        });
+    }
+
+    async function ensureOnlineSocket() {
+        await loadSocketIoClient();
+        if (!onlineSocket) {
+            onlineSocket = window.io({ autoConnect: false });
+            bindOnlineSocket(onlineSocket);
+        }
+        if (onlineSocket.connected) return onlineSocket;
+        await new Promise((resolve, reject) => {
+            const timeout = window.setTimeout(() => {
+                cleanup();
+                reject(new Error("Tempo esgotado ao conectar ao servidor."));
+            }, 10000);
+            const onConnect = () => {
+                cleanup();
+                resolve();
+            };
+            const onError = (error) => {
+                cleanup();
+                reject(error);
+            };
+            const cleanup = () => {
+                window.clearTimeout(timeout);
+                onlineSocket.off("connect", onConnect);
+                onlineSocket.off("connect_error", onError);
+            };
+            onlineSocket.once("connect", onConnect);
+            onlineSocket.once("connect_error", onError);
+            onlineSocket.connect();
+        });
+        return onlineSocket;
+    }
+
+    async function emitOnlineRequest(eventName, payload) {
+        const socket = await ensureOnlineSocket();
+        return new Promise((resolve, reject) => {
+            socket.timeout(10000).emit(eventName, payload, (timeoutError, response) => {
+                if (timeoutError) {
+                    reject(new Error("O servidor não respondeu a tempo."));
+                    return;
+                }
+                if (response?.ok) resolve(response);
+                else reject(new Error(response?.error || "O servidor recusou a solicitação."));
+            });
+        });
+    }
+
+    function resetOnlineSession() {
+        onlineMode = false;
+        onlineRoomCode = "";
+        onlineRole = null;
+        onlineTeamSubmitted = false;
+        onlineTeamsLoading = false;
+        onlineBattleStarted = false;
+        onlineBattleReady = false;
+        onlineWaitingForState = false;
+        onlineForcedSwitchPending = false;
+        updateOnlineLobby();
+        if (game) renderActionPanel();
+        if (pokemonList.length) renderTeamBuilder();
+    }
+
+    async function createOnlineRoom() {
+        createOnlineRoomButton.disabled = true;
+        if (soundEffectsEnabled) getAudioContext();
+        try {
+            const response = await emitOnlineRequest("room:create", {});
+            onlineMode = true;
+            onlineRoomCode = response.roomCode;
+            onlineRole = 0;
+            onlineTeamSubmitted = false;
+            updateOnlineLobby();
+            setOnlineLobbyStatus("Sala criada. Compartilhe o código e monte seu time.");
+            renderTeamBuilder();
+        } catch (error) {
+            setOnlineLobbyStatus(error.message, true);
+        } finally {
+            createOnlineRoomButton.disabled = false;
+        }
+    }
+
+    async function joinOnlineRoom() {
+        if (onlineMode) {
+            setOnlineLobbyStatus("Saia da sala atual antes de entrar em outra.", true);
+            return;
+        }
+        const roomCode = onlineRoomInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9]{6}$/.test(roomCode)) {
+            setOnlineLobbyStatus("Digite um código de sala válido com seis caracteres.", true);
+            return;
+        }
+        joinOnlineRoomButton.disabled = true;
+        if (soundEffectsEnabled) getAudioContext();
+        try {
+            const response = await emitOnlineRequest("room:join", { roomCode });
+            onlineMode = true;
+            onlineRoomCode = response.roomCode;
+            onlineRole = 1;
+            onlineTeamSubmitted = false;
+            updateOnlineLobby();
+            setOnlineLobbyStatus("Conectado à sala. Monte seu time e envie para começar.");
+            renderTeamBuilder();
+        } catch (error) {
+            setOnlineLobbyStatus(error.message, true);
+        } finally {
+            joinOnlineRoomButton.disabled = false;
+        }
+    }
+
+    async function leaveOnlineRoom() {
+        if (!onlineMode) return;
+        try {
+            await emitOnlineRequest("room:leave", { roomCode: onlineRoomCode });
+        } catch (error) {
+            console.error("Erro ao sair da sala online:", error);
+        }
+        resetOnlineSession();
+        setOnlineLobbyStatus("Você saiu da sala.");
+    }
+
+    async function copyOnlineInvite() {
+        try {
+            await navigator.clipboard.writeText(onlineRoomCode);
+            setOnlineLobbyStatus("Código da sala copiado.");
+        } catch (error) {
+            console.error("Não foi possível copiar o código da sala:", error);
+            onlineRoomInput.focus();
+            onlineRoomInput.select();
+            setOnlineLobbyStatus("Selecione e copie o código da sala manualmente.", true);
+        }
+    }
+
+    function serializeOnlineTeam(teamIndex) {
+        const team = pokemonTeams[teamIndex];
+        const moveNames = team.map((slot) => chooseMoves(slot, teamModes[teamIndex])
+            .map(({ move }) => move.name));
+        team.forEach((slot, index) => {
+            slot.selectedMoves = moveNames[index];
+        });
+        teamModes[teamIndex] = "manual";
+        return {
+            name: playerNames[teamIndex].trim() || `Jogador ${teamIndex + 1}`,
+            slots: team.map((slot, index) => ({
+                pokemonId: slot.entry.id,
+                heldItem: slot.heldItem || null,
+                moveNames: moveNames[index]
+            }))
+        };
+    }
+
+    async function submitOnlineTeam() {
+        if (!onlineMode || !Number.isInteger(onlineRole) || onlineTeamSubmitted) return;
+        if (!validateTeams([onlineRole])) return;
+        const team = serializeOnlineTeam(onlineRole);
+        startButton.disabled = true;
+        onlineTeamSubmitted = true;
+        renderTeamBuilder();
+        setOnlineLobbyStatus("Enviando seu time para a sala...");
+        try {
+            await emitOnlineRequest("room:submit-team", { roomCode: onlineRoomCode, team });
+            updateOnlineLobby();
+            renderTeamBuilder();
+            setOnlineLobbyStatus("Time enviado. Aguardando o adversário.");
+        } catch (error) {
+            onlineTeamSubmitted = false;
+            startButton.disabled = false;
+            renderTeamBuilder();
+            setOnlineLobbyStatus(error.message, true);
+        }
+    }
+
+    async function loadOnlineTeams(payload) {
+        if (!onlineMode || onlineTeamsLoading || onlineBattleStarted) return;
+        if (!Array.isArray(payload?.teams) || payload.teams.length !== 2) {
+            throw new Error("O servidor enviou uma configuração de times inválida.");
+        }
+        onlineTeamsLoading = true;
+        onlineTeamSubmitted = true;
+        startButton.disabled = true;
+        setOnlineLobbyStatus("Carregando os times da sala...");
+        try {
+            for (let teamIndex = 0; teamIndex < 2; teamIndex++) {
+                const config = payload.teams[teamIndex];
+                if (!config || !Array.isArray(config.slots) || config.slots.length !== 6) {
+                    throw new Error(`O Time ${teamIndex + 1} recebido está incompleto.`);
+                }
+                const existing = pokemonTeams[teamIndex];
+                const matchesLocalTeam = teamIndex === onlineRole
+                    && existing.every((slot, index) => slot?.entry.id === config.slots[index].pokemonId);
+                const localPokemon = matchesLocalTeam
+                    ? existing
+                    : await mapWithConcurrency(config.slots, 6, async (slot) => {
+                        const entry = pokemonList.find(({ id }) => id === slot.pokemonId);
+                        if (!entry || !isSelectablePokemon(entry)) {
+                            throw new Error(`Pokémon indisponível: ${slot.pokemonId}`);
+                        }
+                        return {
+                            entry,
+                            pokemon: await ensurePokemonMoves(await api.getPokemon(entry.id)),
+                            heldItem: slot.heldItem,
+                            selectedMoves: slot.moveNames,
+                            loading: false
+                        };
+                    });
+                pokemonTeams[teamIndex] = localPokemon.map((slot, index) => ({
+                    ...slot,
+                    heldItem: config.slots[index].heldItem,
+                    selectedMoves: [...config.slots[index].moveNames],
+                    loading: false
+                }));
+                playerNames[teamIndex] = config.name;
+                teamModes[teamIndex] = "manual";
+            }
+            renderTeamBuilder();
+            await startBattle();
+            if (!onlineBattleStarted) throw new Error("A batalha não foi iniciada.");
+            await emitOnlineRequest("battle:ready", { roomCode: onlineRoomCode });
+        } finally {
+            onlineTeamsLoading = false;
+            updateOnlineLobby();
+        }
     }
 
     function isSelectablePokemon(pokemon) {
@@ -498,7 +852,7 @@ window.PokedexApp.battle = (() => {
                 : '<span class="team-slot-held-item" aria-label="Sem item segurado"><span aria-hidden="true">+</span></span>';
             return `<button class="team-slot" type="button"
                 aria-label="Editar ${formatName(selection.name)}"
-                data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>
+                data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] || onlineTeamSubmitted ? "disabled" : ""}>
                 <span class="team-slot-content">
                     <span class="slot-pokemon-art">
                         <img src="${escapeHTML(imageUrl(slot.pokemon))}" alt="">
@@ -521,7 +875,7 @@ window.PokedexApp.battle = (() => {
 
         return `<button class="team-slot is-empty" type="button"
             aria-label="${selection ? `Editar ${formatName(selection.name)}` : `Escolher Pokémon ${slotIndex + 1} para o Time ${teamIndex + 1}`}"
-            data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>
+            data-team="${teamIndex}" data-slot="${slotIndex}" ${teamRandomizing[teamIndex] || onlineTeamSubmitted ? "disabled" : ""}>
             <div class="team-slot-heading">
                 <span class="team-slot-title">${selection && slot.pokemon ? formatName(selection.name) : `Pokémon ${slotIndex + 1}`}</span>
                 <span class="team-slot-status">${selection ? slot.loading ? "Carregando" : "Falha ao carregar" : "Vaga livre"}</span>
@@ -532,15 +886,16 @@ window.PokedexApp.battle = (() => {
 
     function renderTeamBuilder() {
         teamBuilder.innerHTML = [0, 1].map((teamIndex) => `
-            <section class="team-panel">
+            <section class="team-panel ${onlineMode && teamIndex !== onlineRole ? "online-opponent-hidden" : ""}">
                 <div class="team-panel-heading">
-                    <h3>Time ${teamIndex + 1}</h3>
+                    <h3>${onlineMode ? "Seu time" : `Time ${teamIndex + 1}`}</h3>
                     <div class="team-panel-controls">
                         <label class="team-name-control">Nome do jogador
-                            <input type="text" maxlength="24" value="${escapeHTML(playerNames[teamIndex])}" data-player-name="${teamIndex}">
+                            <input type="text" maxlength="24" value="${escapeHTML(playerNames[teamIndex])}" data-player-name="${teamIndex}"
+                                ${onlineTeamSubmitted ? "disabled" : ""}>
                         </label>
                         <label class="move-mode-control">Configuração dos golpes
-                            <select data-move-mode="${teamIndex}" ${teamRandomizing[teamIndex] ? "disabled" : ""}>
+                            <select data-move-mode="${teamIndex}" ${teamRandomizing[teamIndex] || onlineTeamSubmitted ? "disabled" : ""}>
                                 <option value="manual" ${teamModes[teamIndex] === "manual" ? "selected" : ""}>Manual · escolher 4</option>
                                 <option value="automatic" ${teamModes[teamIndex] === "automatic" ? "selected" : ""}>Automática · níveis mais altos</option>
                                 <option value="random" ${teamModes[teamIndex] === "random" ? "selected" : ""}>Aleatória · sortear 4</option>
@@ -548,7 +903,7 @@ window.PokedexApp.battle = (() => {
                         </label>
                     </div>
                     <button class="team-random-button" type="button" data-random-team="${teamIndex}"
-                        ${teamRandomizing[teamIndex] || pokemonTeams[teamIndex].some((slot) => slot?.loading) ? "disabled" : ""}>
+                        ${teamRandomizing[teamIndex] || onlineTeamSubmitted || pokemonTeams[teamIndex].some((slot) => slot?.loading) ? "disabled" : ""}>
                         ${teamRandomizing[teamIndex] ? "Sorteando..." : pokemonTeams[teamIndex].some((slot) => slot?.loading) ? "Aguarde carregamento" : "Sortear 6 Pokémon"}
                     </button>
                 </div>
@@ -579,7 +934,11 @@ window.PokedexApp.battle = (() => {
                 renderTeamBuilder();
             });
         });
-        startButton.disabled = teamRandomizing.some(Boolean);
+        teamBuilder.querySelectorAll(".online-opponent-hidden").forEach((panel) => {
+            panel.setAttribute("aria-hidden", "true");
+        });
+        startButton.disabled = teamRandomizing.some(Boolean) || onlineTeamSubmitted;
+        updateOnlineLobby();
     }
 
     async function randomizeTeam(teamIndex) {
@@ -1000,8 +1359,8 @@ window.PokedexApp.battle = (() => {
         selectPokemon(teamIndex, slotIndex, selection);
     }
 
-    function validateTeams() {
-        for (let teamIndex = 0; teamIndex < 2; teamIndex++) {
+    function validateTeams(teamIndices = [0, 1]) {
+        for (const teamIndex of teamIndices) {
             const slots = pokemonTeams[teamIndex];
             if (slots.some((slot) => !slot || !slot.pokemon)) {
                 setSetupMessage(`Complete os seis Pokémon do Time ${teamIndex + 1} e aguarde o carregamento.`, true);
@@ -1054,6 +1413,10 @@ window.PokedexApp.battle = (() => {
     }
 
     async function startBattle() {
+        if (onlineMode && !onlineTeamsLoading) {
+            await submitOnlineTeam();
+            return;
+        }
         if (!validateTeams()) return;
 
         startButton.disabled = true;
@@ -1104,6 +1467,7 @@ window.PokedexApp.battle = (() => {
                         teamIndex,
                         entry: slot.entry,
                         pokemon: slot.pokemon,
+                        basePokemon: slot.pokemon,
                         megaPokemon: MEGA_STONES[slot.heldItem]
                             ? megaPokemonByName.get(MEGA_STONES[slot.heldItem])
                             : null,
@@ -1185,6 +1549,9 @@ window.PokedexApp.battle = (() => {
                 },
                 currentResolution: null
             };
+            onlineBattleStarted = onlineMode;
+            onlineBattleReady = false;
+            onlineWaitingForState = onlineMode;
             renderedLogLength = 0;
             battleLog.replaceChildren();
             setupView.hidden = true;
@@ -1193,10 +1560,11 @@ window.PokedexApp.battle = (() => {
             battleView.scrollIntoView({ behavior: "smooth", block: "start" });
         } catch (error) {
             console.error("Erro ao preparar a batalha:", error);
+            onlineBattleStarted = false;
             setSetupMessage("Não foi possível preparar a batalha. Verifique a conexão e tente novamente.", true);
         } finally {
             startButton.disabled = false;
-            startButton.textContent = "Iniciar batalha";
+            updateOnlineLobby();
         }
     }
 
@@ -1461,6 +1829,26 @@ window.PokedexApp.battle = (() => {
         if (!switchTarget) return;
         const { teamIndex, activeSlot, forced, moveName, onChosen } = switchTarget;
         if (forced) {
+            if (onlineMode && teamIndex !== onlineRole) return;
+            if (onlineMode && onlineRole === 1) {
+                switchDialog.close();
+                onlineForcedSwitchPending = true;
+                onlineWaitingForState = true;
+                renderActionPanel();
+                onlineSocket.emit("battle:forced-switch", {
+                    roomCode: onlineRoomCode,
+                    activeSlot,
+                    switchToIndex,
+                    moveName
+                }, (response) => {
+                    if (response?.ok) return;
+                    onlineForcedSwitchPending = false;
+                    onlineWaitingForState = false;
+                    setOnlineLobbyStatus(response?.error || "Não foi possível enviar a troca.", true);
+                    renderActionPanel();
+                });
+                return;
+            }
             const team = game.teams[teamIndex];
             const outgoingIndex = game.active[teamIndex][activeSlot];
             const outgoing = team.members[outgoingIndex];
@@ -1584,9 +1972,24 @@ window.PokedexApp.battle = (() => {
             return;
         }
 
+        if (onlineMode && !onlineBattleReady) {
+            renderOnlineWaiting("Aguardando os dois jogadores carregarem a batalha...");
+            return;
+        }
+        if (onlineMode && onlineWaitingForState) {
+            renderOnlineWaiting(onlineForcedSwitchPending
+                ? "Aguardando a entrada do Pokémon..."
+                : "Ação enviada. Aguardando a resolução do turno...");
+            return;
+        }
+
         const requiredReplacement = getRequiredReplacement();
         if (requiredReplacement) {
             const { teamIndex, activeSlot } = requiredReplacement;
+            if (onlineMode && teamIndex !== onlineRole) {
+                renderOnlineWaiting("Aguardando o adversário escolher um Pokémon reserva...");
+                return;
+            }
             positionTurnControls(teamIndex);
             turnControls.innerHTML = `<section class="turn-action-panel">
                 <h3>${escapeHTML(teamDisplayName(teamIndex))} · escolha uma reserva</h3>
@@ -1595,6 +1998,11 @@ window.PokedexApp.battle = (() => {
             turnControls.querySelector("[data-required-switch]").addEventListener("click", () => {
                 openSwitchPicker(teamIndex, activeSlot, true);
             });
+            return;
+        }
+
+        if (onlineMode && onlineRole !== game.currentPlayer) {
+            renderOnlineWaiting("Aguardando a jogada do adversário...");
             return;
         }
 
@@ -1717,6 +2125,272 @@ window.PokedexApp.battle = (() => {
         });
     }
 
+    function renderOnlineWaiting(message) {
+        positionTurnControls(Number.isInteger(onlineRole) ? onlineRole : game.currentPlayer);
+        turnControls.innerHTML = `<section class="turn-action-panel online-waiting-panel">
+            <h3>Partida online</h3>
+            <p role="status" aria-live="polite">${escapeHTML(message)}</p>
+        </section>`;
+    }
+
+    function serializeOnlineActions(actions) {
+        return actions.map((action) => ({
+            teamIndex: action.teamIndex,
+            activeSlot: action.activeSlot,
+            attackerIndex: action.attackerIndex,
+            moveName: action.move?.name || null,
+            targetTeamIndex: Number.isInteger(action.targetTeamIndex) ? action.targetTeamIndex : null,
+            targetActiveSlot: Number.isInteger(action.targetActiveSlot) ? action.targetActiveSlot : null,
+            targetUnavailable: Boolean(action.targetUnavailable),
+            megaEvolve: Boolean(action.megaEvolve),
+            switchToIndex: Number.isInteger(action.switchToIndex) ? action.switchToIndex : null
+        }));
+    }
+
+    function hydrateOnlineActions(teamIndex, payload) {
+        if (!Array.isArray(payload) || payload.length !== getActiveActors(teamIndex).length) {
+            throw new Error("Quantidade de ações incompatível com o formato da batalha.");
+        }
+        return payload.map((action) => {
+            const activeSlot = Number(action.activeSlot);
+            const attackerIndex = Number(action.attackerIndex);
+            if (action.teamIndex !== teamIndex
+                || !Number.isInteger(activeSlot) || activeSlot < 0 || activeSlot >= game.format
+                || game.active[teamIndex][activeSlot] !== attackerIndex) {
+                throw new Error("O jogador enviou uma ação para um Pokémon inválido.");
+            }
+            const member = game.teams[teamIndex].members[attackerIndex];
+            const move = action.moveName
+                ? member.moves.find((candidate) => candidate.name === action.moveName)
+                : null;
+            const switchToIndex = Number.isInteger(action.switchToIndex) ? action.switchToIndex : null;
+            if ((!move && switchToIndex === null)
+                || switchToIndex !== null && !getAvailableSwitches(teamIndex)
+                    .some(({ index }) => index === switchToIndex)) {
+                throw new Error("O jogador enviou uma ação ou troca inválida.");
+            }
+            [action.targetTeamIndex, action.targetActiveSlot].forEach((value) => {
+                if (value !== null && (!Number.isInteger(value) || value < 0 || value > 1)) {
+                    throw new Error("O jogador enviou um alvo inválido.");
+                }
+            });
+            return {
+                teamIndex,
+                activeSlot,
+                attackerIndex,
+                move,
+                targetTeamIndex: action.targetTeamIndex,
+                targetActiveSlot: action.targetActiveSlot,
+                targetUnavailable: Boolean(action.targetUnavailable),
+                megaEvolve: Boolean(action.megaEvolve),
+                ...(switchToIndex !== null ? { switchToIndex } : {})
+            };
+        });
+    }
+
+    function sendOnlineTeamActions(teamIndex) {
+        if (!onlineSocket?.connected) {
+            onlineWaitingForState = false;
+            setOnlineLobbyStatus("A conexão com a sala foi perdida.", true);
+            renderActionPanel();
+            return;
+        }
+        onlineSocket.emit("battle:team-actions", {
+            roomCode: onlineRoomCode,
+            turn: game.turn,
+            teamIndex,
+            actions: serializeOnlineActions(game.pendingActions[teamIndex])
+        }, (response) => {
+            if (response?.ok) return;
+            onlineWaitingForState = false;
+            setOnlineLobbyStatus(response?.error || "Não foi possível enviar as ações.", true);
+            renderActionPanel();
+        });
+    }
+
+    async function handleOnlineTeamActions(payload) {
+        if (!onlineBattleStarted || !onlineBattleReady || payload?.turn !== game.turn) return;
+        const remoteTeamIndex = onlineRole === 0 ? 1 : 0;
+        if (payload?.teamIndex !== remoteTeamIndex) return;
+        const actions = hydrateOnlineActions(remoteTeamIndex, payload.actions);
+        game.pendingActions[remoteTeamIndex] = actions;
+        if (onlineRole === 1) {
+            game.currentPlayer = 1;
+            onlineWaitingForState = false;
+            renderBattle();
+            return;
+        }
+        onlineWaitingForState = false;
+        await resolveTurn();
+    }
+
+    function serializeOnlineGame() {
+        const effects = game.visualEffects;
+        return {
+            format: game.format,
+            teams: game.teams.map((team) => ({
+                name: team.name,
+                members: team.members.map((member) => {
+                    const { entry, pokemon, basePokemon, megaPokemon, moves, originalMoves, ...runtime } = member;
+                    return {
+                        ...runtime,
+                        pokemonName: pokemon.name,
+                        moveNames: moves.map(({ name }) => name)
+                    };
+                })
+            })),
+            active: game.active,
+            megaUsed: game.megaUsed,
+            currentPlayer: game.currentPlayer,
+            turn: game.turn,
+            log: game.log,
+            winner: game.winner,
+            pendingActions: [[], []],
+            pendingMega: [...game.pendingMega],
+            pendingTarget: null,
+            lastExecutedMove: null,
+            fieldEffects: game.fieldEffects,
+            currentResolution: game.currentResolution,
+            visualEffects: effects ? {
+                attackers: [...effects.attackers],
+                hitMembers: [...effects.hitMembers],
+                damagedBefore: [...effects.damagedBefore],
+                itemEffects: [...effects.itemEffects],
+                healedMembers: [...effects.healedMembers],
+                healedBefore: [...effects.healedBefore],
+                megaEvolved: [...effects.megaEvolved]
+            } : null
+        };
+    }
+
+    function applyOnlineGameState(state, isResolving = false) {
+        if (!state || !Array.isArray(state.teams) || state.teams.length !== 2
+            || state.teams.some((team) => !Array.isArray(team.members) || team.members.length !== 6)) {
+            throw new Error("O servidor enviou um estado de batalha inválido.");
+        }
+        if (isResolving) playOnlineStateSounds(state);
+        const typeDetails = game.typeDetails;
+        const localTeams = game.teams;
+        const knownMoves = new Map(localTeams.flatMap((team) =>
+            team.members.flatMap((member) => [...member.originalMoves, ...member.moves]))
+            .map((move) => [move.name, move]));
+        const teams = state.teams.map((team, teamIndex) => ({
+            ...localTeams[teamIndex],
+            name: team.name,
+            members: team.members.map((snapshot, memberIndex) => {
+                const member = localTeams[teamIndex].members[memberIndex];
+                const moves = snapshot.moveNames.map((name) => {
+                    const move = knownMoves.get(name);
+                    if (!move) throw new Error(`O golpe sincronizado ${name} não está disponível.`);
+                    return move;
+                });
+                const { pokemonName, moveNames, ...runtime } = snapshot;
+                const pokemon = snapshot.megaEvolved ? member.megaPokemon : member.basePokemon;
+                if (!pokemon || pokemon.name !== pokemonName) {
+                    throw new Error(`A forma de ${member.entry.name} não corresponde à batalha.`);
+                }
+                return { ...member, ...runtime, pokemon, moves };
+            })
+        }));
+        game = {
+            ...state,
+            teams,
+            typeDetails,
+            pendingMega: new Set(state.pendingMega),
+            visualEffects: state.visualEffects ? {
+                attackers: new Set(state.visualEffects.attackers),
+                hitMembers: new Set(state.visualEffects.hitMembers),
+                damagedBefore: new Map(state.visualEffects.damagedBefore),
+                itemEffects: new Map(state.visualEffects.itemEffects),
+                healedMembers: new Set(state.visualEffects.healedMembers),
+                healedBefore: new Map(state.visualEffects.healedBefore),
+                megaEvolved: new Set(state.visualEffects.megaEvolved)
+            } : null
+        };
+        renderedLogLength = Math.min(renderedLogLength, game.log.length);
+        if (!renderedLogLength) battleLog.replaceChildren();
+        setupView.hidden = true;
+        battleView.hidden = false;
+        renderBattle(isResolving);
+    }
+
+    function playOnlineStateSounds(state) {
+        if (!soundEffectsEnabled) return;
+        const previous = game.visualEffects;
+        const effects = state.visualEffects;
+        if (state.currentResolution?.phase === "attacking"
+            && game.currentResolution?.phase !== "attacking") {
+            playSoundEffect("attack");
+        }
+        if (effects?.hitMembers?.some((key) => !previous?.hitMembers.has(key))) {
+            playSoundEffect("hit");
+        }
+        effects?.itemEffects?.forEach(([key, itemEffect]) => {
+            if (previous?.itemEffects.get(key)?.label !== itemEffect.label) {
+                playSoundEffect(itemEffect.kind === "heal" ? "heal" : "item");
+            }
+        });
+    }
+
+    function sendOnlineVisualState() {
+        if (onlineRole !== 0 || !onlineBattleStarted || !onlineBattleReady || !onlineSocket?.connected) return;
+        onlineSocket.emit("battle:visual-state", {
+            roomCode: onlineRoomCode,
+            state: serializeOnlineGame()
+        });
+    }
+
+    function sendOnlineBattleState() {
+        if (onlineRole !== 0 || !onlineBattleStarted || !onlineSocket?.connected) return;
+        onlineSocket.emit("battle:state", {
+            roomCode: onlineRoomCode,
+            turn: game.turn,
+            state: serializeOnlineGame()
+        }, (response) => {
+            if (!response?.ok) setOnlineLobbyStatus(response?.error || "Falha ao sincronizar a batalha.", true);
+        });
+    }
+
+    function applyRemoteForcedSwitch(payload) {
+        const teamIndex = 1;
+        const { activeSlot, switchToIndex } = payload;
+        if (payload.roomCode !== onlineRoomCode
+            || !Number.isInteger(activeSlot) || activeSlot < 0 || activeSlot >= game.format
+            || !getAvailableSwitches(teamIndex).some(({ index }) => index === switchToIndex)) {
+            throw new Error("A troca forçada recebida não é válida.");
+        }
+        const outgoingIndex = game.active[teamIndex][activeSlot];
+        const outgoing = outgoingIndex === null ? null : game.teams[teamIndex].members[outgoingIndex];
+        if (payload.moveName && !outgoing || !payload.moveName && outgoing) {
+            throw new Error("A troca não corresponde ao estado atual do Pokémon.");
+        }
+        const incoming = game.teams[teamIndex].members[switchToIndex];
+        if (outgoing) {
+            outgoing.statStages = {};
+            outgoing.confusionTurns = 0;
+            outgoing.moveEffects = {};
+            setMemberTypeNames(outgoing, memberResetTypes(outgoing));
+            outgoing.moves = [...outgoing.originalMoves];
+            outgoing.transformedStats = null;
+            outgoing.protectionChain = 0;
+            outgoing.criticalStage = 0;
+        }
+        game.active[teamIndex][activeSlot] = switchToIndex;
+        incoming.entryTurn = game.turn;
+        game.log.push(outgoing
+            ? `${plainName(outgoing.entry.name)} saiu após ${formatName(payload.moveName)}; ${plainName(incoming.entry.name)} entrou.`
+            : `${teamDisplayName(teamIndex)} enviou ${plainName(incoming.entry.name)} para a batalha.`);
+        applyEntryHazards(teamIndex, switchToIndex);
+        if (pendingForcedSwitchResolution) {
+            const resolve = pendingForcedSwitchResolution;
+            pendingForcedSwitchResolution = null;
+            resolve(true);
+            return;
+        }
+        renderBattle();
+        sendOnlineBattleState();
+    }
+
     function registerAction(action) {
         const actions = game.pendingActions[action.teamIndex];
         if (actions.some(({ activeSlot }) => activeSlot === action.activeSlot)) return;
@@ -1724,6 +2398,15 @@ window.PokedexApp.battle = (() => {
         game.pendingMega.delete(`${action.teamIndex}:${action.activeSlot}`);
         actions.push(action);
         if (actions.length < getActiveActors(action.teamIndex).length) {
+            renderActionPanel();
+        } else if (onlineMode) {
+            if (action.teamIndex !== onlineRole) return;
+            if (onlineRole === 0) {
+                game.currentPlayer = 1;
+            } else {
+                onlineWaitingForState = true;
+            }
+            sendOnlineTeamActions(action.teamIndex);
             renderActionPanel();
         } else if (action.teamIndex === 0) {
             game.currentPlayer = 1;
@@ -3179,6 +3862,26 @@ window.PokedexApp.battle = (() => {
             game.log.push(`${plainName(target.member.entry.name)} não tinha reserva para ser trocado por ${formatName(moveName)}.`);
             return false;
         }
+        if (onlineMode && target.teamIndex !== onlineRole) {
+            if (!onlineSocket?.connected) {
+                setOnlineLobbyStatus("A conexão com a sala foi perdida.", true);
+                return false;
+            }
+            return new Promise((resolve) => {
+                pendingForcedSwitchResolution = resolve;
+                onlineSocket.emit("battle:forced-switch-request", {
+                    roomCode: onlineRoomCode,
+                    teamIndex: target.teamIndex,
+                    activeSlot: target.activeSlot,
+                    moveName
+                }, (response) => {
+                    if (response?.ok) return;
+                    pendingForcedSwitchResolution = null;
+                    resolve(false);
+                    setOnlineLobbyStatus(response?.error || "Não foi possível solicitar a troca.", true);
+                });
+            });
+        }
         await new Promise((resolve) => openSwitchPicker(
             target.teamIndex, target.activeSlot, true, moveName, resolve
         ));
@@ -3190,6 +3893,7 @@ window.PokedexApp.battle = (() => {
         game.currentResolution.phase = "impact";
         game.visualEffects.attackers.clear();
         renderBattle(true);
+        sendOnlineVisualState();
         const hasItemEffect = game.visualEffects.itemEffects.size || game.visualEffects.healedMembers.size;
         await waitForAnimation(game.visualEffects.hitMembers.size || hasItemEffect ? 850 : 500);
         game.currentResolution.impactShown = true;
@@ -3246,6 +3950,7 @@ window.PokedexApp.battle = (() => {
         if (game.currentResolution) {
             game.currentResolution.phase = "attacking";
             renderBattle(true);
+            sendOnlineVisualState();
             await waitForAnimation(550);
         }
         if (move.name === "shed-tail" && attacker.currentHp <= Math.floor(attacker.maxHp / 2)) {
@@ -3634,6 +4339,7 @@ window.PokedexApp.battle = (() => {
         });
         if (game.visualEffects.megaEvolved.size) {
             renderBattle(true);
+            sendOnlineVisualState();
             await waitForAnimation(1500);
             game.visualEffects.megaEvolved.clear();
         }
@@ -3734,6 +4440,7 @@ window.PokedexApp.battle = (() => {
             || game.visualEffects.healedMembers.size) {
             game.currentResolution = null;
             renderBattle(true);
+            sendOnlineVisualState();
             await waitForAnimation(850);
             game.visualEffects.hitMembers.clear();
             game.visualEffects.damagedBefore.clear();
@@ -3757,12 +4464,17 @@ window.PokedexApp.battle = (() => {
         game.currentPlayer = 0;
         game.currentResolution = null;
         renderBattle();
+        if (onlineMode && onlineRole === 0) sendOnlineBattleState();
     }
 
     function returnToSetup() {
         stopBattleMusic();
         battleAudioStatus.textContent = "";
+        if (onlineMode && onlineSocket?.connected) {
+            onlineSocket.emit("room:leave", { roomCode: onlineRoomCode });
+        }
         game = null;
+        resetOnlineSession();
         battleView.hidden = true;
         setupView.hidden = false;
         setSetupMessage("", false);
@@ -3888,6 +4600,13 @@ window.PokedexApp.battle = (() => {
         renderPokemonPicker();
     });
     pickerRetry.addEventListener("click", renderPokemonPicker);
+    createOnlineRoomButton.addEventListener("click", createOnlineRoom);
+    joinOnlineRoomButton.addEventListener("click", joinOnlineRoom);
+    copyOnlineRoomButton.addEventListener("click", copyOnlineInvite);
+    leaveOnlineRoomButton.addEventListener("click", leaveOnlineRoom);
+    onlineRoomInput.addEventListener("input", () => {
+        onlineRoomInput.value = onlineRoomInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    });
     startButton.addEventListener("click", startBattle);
     document.querySelector("#edit-teams").addEventListener("click", returnToSetup);
     loadPokemonList();

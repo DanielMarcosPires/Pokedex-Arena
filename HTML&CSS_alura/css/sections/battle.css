@@ -111,6 +111,77 @@
     color: #ff8a7a;
 }
 
+.online-lobby {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0 0 20px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #171a22;
+    padding: 14px 16px;
+}
+
+.online-lobby-copy h3 {
+    margin: 0 0 4px;
+    font: 600 13px var(--font-display);
+}
+
+.online-lobby-copy p,
+.online-lobby-status,
+.online-waiting-panel p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.online-lobby-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.online-room-entry input {
+    width: 145px;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0 10px;
+    font: 700 12px var(--font-display);
+    letter-spacing: .12em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.online-room-entry input:focus {
+    outline: 1px solid var(--accent);
+    border-color: var(--accent);
+}
+
+.online-lobby-status {
+    flex: 1 0 100%;
+    text-align: right;
+}
+
+.online-lobby-status.error {
+    color: #ff8a7a;
+}
+
+.online-opponent-hidden {
+    display: none !important;
+}
+
+.online-waiting-panel {
+    display: grid;
+    gap: 8px;
+}
+
 .team-builder {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1867,6 +1938,30 @@
     .battle-section-heading {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .online-lobby {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .online-lobby-actions {
+        justify-content: stretch;
+    }
+
+    .online-lobby-actions > button,
+    .online-room-entry {
+        flex: 1 1 130px;
+    }
+
+    .online-room-entry input {
+        width: 100%;
+    }
+
+    .online-lobby-status {
+        text-align: left;
     }
 
     .battle-format-control {

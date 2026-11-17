@@ -1,0 +1,20 @@
+{
+  "name": "pokedex-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pokédex Arena com partidas online entre amigos",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.1"
+  }
+}

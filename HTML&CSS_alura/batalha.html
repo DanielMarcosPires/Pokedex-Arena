@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#11131a">
-    <meta name="description" content="Monte dois times de seis Pokémon e batalhe em uma partida local por turnos.">
+    <meta name="description" content="Monte times de seis Pokémon e batalhe localmente ou online com amigos.">
     <link rel="icon" href="./pokemon.png" type="image/x-icon">
     <title>Batalha Pokémon — Arena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +40,7 @@
 
     <main class="battle-page">
         <section class="battle-hero">
-            <p class="eyebrow"><span class="eyebrow-line"></span> ARENA LOCAL</p>
+            <p class="eyebrow"><span class="eyebrow-line"></span> ARENA LOCAL E ONLINE</p>
             <h1>Monte seu time.<br><span>Teste a estratégia.</span></h1>
             <p>Dois jogadores, seis Pokémon para cada lado e batalhas por turnos.</p>
         </section>
@@ -59,6 +59,24 @@
                     </select>
                 </label>
             </div>
+            <section class="online-lobby" aria-labelledby="online-lobby-title">
+                <div class="online-lobby-copy">
+                    <h3 id="online-lobby-title">Jogar online com um amigo</h3>
+                    <p>Crie uma sala e compartilhe o código de convite.</p>
+                </div>
+                <div class="online-lobby-actions">
+                    <button class="battle-secondary-button" id="create-online-room" type="button">Criar sala</button>
+                    <label class="online-room-entry">
+                        <span class="sr-only">Código da sala</span>
+                        <input id="online-room-code" type="text" maxlength="6" autocomplete="off"
+                            placeholder="Código da sala" aria-label="Código da sala">
+                    </label>
+                    <button class="battle-secondary-button" id="join-online-room" type="button">Entrar na sala</button>
+                    <button class="battle-secondary-button" id="copy-online-room" type="button" hidden>Copiar convite</button>
+                    <button class="battle-secondary-button" id="leave-online-room" type="button" hidden>Sair da sala</button>
+                </div>
+                <p class="online-lobby-status" id="online-lobby-status" role="status" aria-live="polite"></p>
+            </section>
             <p class="battle-message" id="setup-message" role="status">Carregando Pokémon...</p>
             <div class="team-builder" id="team-builder"></div>
             <div class="battle-setup-actions">
