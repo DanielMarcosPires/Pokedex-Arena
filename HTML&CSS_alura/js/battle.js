@@ -1775,7 +1775,10 @@ window.PokedexApp.battle = (() => {
     }
 
     function getRequiredReplacement() {
-        for (let teamIndex = 0; teamIndex < game.teams.length; teamIndex++) {
+        const teamOrder = onlineMode && Number.isInteger(onlineRole)
+            ? [onlineRole, 1 - onlineRole]
+            : [0, 1];
+        for (const teamIndex of teamOrder) {
             const activeSlot = game.active[teamIndex].findIndex((memberIndex) => memberIndex === null);
             if (activeSlot !== -1 && getAvailableSwitches(teamIndex).length > 0) {
                 return { teamIndex, activeSlot };
@@ -1977,13 +1980,6 @@ window.PokedexApp.battle = (() => {
             renderOnlineWaiting("Aguardando os dois jogadores carregarem a batalha...");
             return;
         }
-        if (onlineMode && onlineWaitingForState) {
-            renderOnlineWaiting(onlineForcedSwitchPending
-                ? "Aguardando a entrada do Pokémon..."
-                : "Ação enviada. Aguardando a resolução do turno...");
-            return;
-        }
-
         const requiredReplacement = getRequiredReplacement();
         if (requiredReplacement) {
             const { teamIndex, activeSlot } = requiredReplacement;
@@ -1999,6 +1995,13 @@ window.PokedexApp.battle = (() => {
             turnControls.querySelector("[data-required-switch]").addEventListener("click", () => {
                 openSwitchPicker(teamIndex, activeSlot, true);
             });
+            return;
+        }
+
+        if (onlineMode && onlineWaitingForState) {
+            renderOnlineWaiting(onlineForcedSwitchPending
+                ? "Aguardando a entrada do Pokémon..."
+                : "Ação enviada. Aguardando a resolução do turno...");
             return;
         }
 
