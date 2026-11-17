@@ -1980,6 +1980,11 @@ window.PokedexApp.battle = (() => {
             renderOnlineWaiting("Aguardando os dois jogadores carregarem a batalha...");
             return;
         }
+        if (onlineMode && onlineWaitingForState && onlineForcedSwitchPending) {
+            renderOnlineWaiting("Aguardando a entrada do Pokémon...");
+            return;
+        }
+
         const requiredReplacement = getRequiredReplacement();
         if (requiredReplacement) {
             const { teamIndex, activeSlot } = requiredReplacement;
@@ -1987,14 +1992,11 @@ window.PokedexApp.battle = (() => {
                 renderOnlineWaiting("Aguardando o adversário escolher um Pokémon reserva...");
                 return;
             }
-            positionTurnControls(teamIndex);
-            turnControls.innerHTML = `<section class="turn-action-panel">
-                <h3>${escapeHTML(teamDisplayName(teamIndex))} · escolha uma reserva</h3>
-                <button class="battle-secondary-button" type="button" data-required-switch>Escolher Pokémon</button>
-            </section>`;
-            turnControls.querySelector("[data-required-switch]").addEventListener("click", () => {
-                openSwitchPicker(teamIndex, activeSlot, true);
-            });
+            const pickerAlreadyOpen = switchDialog.open
+                && switchTarget?.teamIndex === teamIndex
+                && switchTarget?.activeSlot === activeSlot
+                && switchTarget?.forced;
+            if (!pickerAlreadyOpen) openSwitchPicker(teamIndex, activeSlot, true);
             return;
         }
 
