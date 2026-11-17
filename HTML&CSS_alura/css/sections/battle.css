@@ -48,6 +48,30 @@
     letter-spacing: -.03em;
 }
 
+.battle-view-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.battle-audio-button {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 9px;
+}
+
+.battle-audio-button[aria-pressed="true"] {
+    border-color: #8da95c;
+    color: #d7f6a4;
+}
+
+.battle-audio-status {
+    color: var(--muted);
+    font-size: 9px;
+}
+
 .battle-format-control,
 .team-name-control,
 .move-mode-control {
@@ -619,6 +643,75 @@
     filter: drop-shadow(0 9px 7px #0008);
 }
 
+.arena-pokemon.is-item-healing .arena-pokemon-art img {
+    animation: item-heal-glow .85s ease-in-out;
+}
+
+.item-effect-burst {
+    position: absolute;
+    z-index: 2;
+    bottom: 8%;
+    left: 50%;
+    width: max-content;
+    max-width: 100%;
+    border: 1px solid currentColor;
+    border-radius: 20px;
+    background: #171a22eF;
+    padding: 5px 8px;
+    color: #d7f6a4;
+    font: 700 8px var(--font-display);
+    text-align: center;
+    transform: translateX(-50%);
+    animation: item-effect-float .85s ease-out both;
+    pointer-events: none;
+}
+
+.item-effect-burst.is-damage {
+    color: #ff9188;
+}
+
+.item-effect-burst.is-boost,
+.item-effect-burst.is-defense {
+    color: #f4d586;
+}
+
+.item-effect-burst.is-status {
+    color: #d6adff;
+}
+
+.item-effect-burst.is-cure {
+    color: #8fe4e1;
+}
+
+@keyframes item-heal-glow {
+    0%,
+    100% {
+        filter: drop-shadow(0 9px 7px #0008);
+    }
+
+    45% {
+        filter: drop-shadow(0 0 18px #9fe279);
+    }
+}
+
+@keyframes item-effect-float {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 10px) scale(.9);
+    }
+
+    24%,
+    75% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -10px) scale(1.02);
+    }
+}
+
 .arena-pokemon.is-mega-evolving .arena-pokemon-art img {
     animation: mega-form-reveal 1.5s ease both;
 }
@@ -822,6 +915,10 @@
     animation: hp-drain .85s cubic-bezier(.22, .72, .2, 1) forwards;
 }
 
+.battle-hp-fill.hp-restoring {
+    animation: hp-restore .85s cubic-bezier(.22, .72, .2, 1) forwards;
+}
+
 @keyframes hp-drain {
     from {
         transform: scaleX(var(--hp-from));
@@ -829,6 +926,22 @@
 
     to {
         transform: scaleX(var(--hp-to));
+    }
+}
+
+@keyframes hp-restore {
+    from {
+        transform: scaleX(var(--hp-from));
+        filter: brightness(.8);
+    }
+
+    60% {
+        filter: brightness(1.7);
+    }
+
+    to {
+        transform: scaleX(var(--hp-to));
+        filter: brightness(1);
     }
 }
 
@@ -1732,6 +1845,21 @@
         font-size: 21px;
     }
 
+    .battle-view-controls {
+        gap: 5px;
+    }
+
+    .battle-audio-button {
+        min-height: 32px;
+        padding: 0 8px;
+        font-size: 8px;
+    }
+
+    .battle-audio-status {
+        width: 100%;
+        text-align: right;
+    }
+
     .battle-hero {
         padding: 18px 0 30px;
     }
@@ -2033,5 +2161,14 @@
     .switch-choice img {
         width: 48px;
         height: 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .arena-pokemon.is-item-healing .arena-pokemon-art img,
+    .item-effect-burst,
+    .battle-hp-fill.hp-restoring {
+        animation-duration: .01ms;
+        animation-iteration-count: 1;
     }
 }

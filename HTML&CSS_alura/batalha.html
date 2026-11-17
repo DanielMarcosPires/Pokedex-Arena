@@ -72,7 +72,14 @@
                     <p class="eyebrow"><span class="eyebrow-line"></span> COMBATE</p>
                     <h2 id="battle-turn">Turno 1</h2>
                 </div>
-                <button class="battle-secondary-button" id="edit-teams" type="button">Editar times</button>
+                <div class="battle-view-controls">
+                    <button class="battle-secondary-button battle-audio-button" id="battle-music-toggle"
+                        type="button" aria-pressed="false">Música: desligada</button>
+                    <button class="battle-secondary-button battle-audio-button" id="battle-sfx-toggle"
+                        type="button" aria-pressed="true">Efeitos sonoros: ligados</button>
+                    <span class="battle-audio-status" id="battle-audio-status" role="status" aria-live="polite"></span>
+                    <button class="battle-secondary-button" id="edit-teams" type="button">Editar times</button>
+                </div>
             </div>
             <div class="battlefield" id="battlefield"></div>
             <div class="turn-controls" id="turn-controls"></div>

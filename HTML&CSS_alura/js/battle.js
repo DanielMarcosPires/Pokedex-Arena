@@ -156,6 +156,9 @@ window.PokedexApp.battle = (() => {
     const turnControls = document.querySelector("#turn-controls");
     const battleLog = document.querySelector("#battle-log");
     const battleTurn = document.querySelector("#battle-turn");
+    const battleMusicButton = document.querySelector("#battle-music-toggle");
+    const battleSfxButton = document.querySelector("#battle-sfx-toggle");
+    const battleAudioStatus = document.querySelector("#battle-audio-status");
     const pickerDialog = document.querySelector("#pokemon-picker-dialog");
     const pickerTitle = document.querySelector("#pokemon-picker-title");
     const pickerSearch = document.querySelector("#pokemon-picker-search");
@@ -176,6 +179,102 @@ window.PokedexApp.battle = (() => {
     const movePickerPageLabel = document.querySelector("#move-picker-page");
     const movePickerPrev = document.querySelector("#move-picker-prev");
     const movePickerNext = document.querySelector("#move-picker-next");
+    let audioContext = null;
+    let musicTimer = null;
+    let musicNoteIndex = 0;
+    let battleMusicEnabled = false;
+    let soundEffectsEnabled = true;
+    const battleTheme = [261.63, 311.13, 392, 466.16, 392, 311.13, 233.08, 311.13];
+
+    function updateBattleAudioControls() {
+        battleMusicButton.textContent = `Música: ${battleMusicEnabled ? "ligada" : "desligada"}`;
+        battleMusicButton.setAttribute("aria-pressed", String(battleMusicEnabled));
+        battleSfxButton.textContent = `Efeitos sonoros: ${soundEffectsEnabled ? "ligados" : "desligados"}`;
+        battleSfxButton.setAttribute("aria-pressed", String(soundEffectsEnabled));
+    }
+
+    function getAudioContext() {
+        if (!window.AudioContext) {
+            battleAudioStatus.textContent = "Áudio não suportado neste navegador.";
+            return null;
+        }
+        if (!audioContext) {
+            try {
+                audioContext = new window.AudioContext();
+            } catch (error) {
+                console.error("Não foi possível criar o áudio da batalha:", error);
+                battleAudioStatus.textContent = "Não foi possível iniciar o áudio.";
+                return null;
+            }
+        }
+        if (audioContext.state === "suspended") {
+            audioContext.resume().catch((error) => {
+                console.error("Não foi possível iniciar o áudio da batalha:", error);
+                battleAudioStatus.textContent = "Não foi possível iniciar o áudio.";
+            });
+        }
+        return audioContext;
+    }
+
+    function playTone(context, frequency, startAt, duration, waveform, volume) {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = waveform;
+        oscillator.frequency.setValueAtTime(frequency, startAt);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(startAt);
+        oscillator.stop(startAt + duration);
+    }
+
+    function playSoundEffect(effect) {
+        if (!soundEffectsEnabled) return;
+        const context = getAudioContext();
+        if (!context || context.state !== "running") return;
+        const patterns = {
+            attack: [[220, 0, 0.1, "square"], [440, 0.07, 0.12, "triangle"]],
+            hit: [[164.81, 0, 0.14, "triangle"], [110, 0.06, 0.12, "sine"]],
+            item: [[659.25, 0, 0.1, "triangle"], [880, 0.08, 0.16, "sine"]],
+            heal: [[523.25, 0, 0.14, "sine"], [659.25, 0.11, 0.14, "sine"], [783.99, 0.22, 0.2, "sine"]]
+        };
+        (patterns[effect] || patterns.item).forEach(([frequency, offset, duration, waveform]) => {
+            playTone(context, frequency, context.currentTime + offset, duration, waveform, 0.045);
+        });
+    }
+
+    function stopBattleMusic() {
+        battleMusicEnabled = false;
+        if (musicTimer !== null) {
+            window.clearInterval(musicTimer);
+            musicTimer = null;
+        }
+        updateBattleAudioControls();
+    }
+
+    function startBattleMusic() {
+        const context = getAudioContext();
+        if (!context) return;
+        battleMusicEnabled = true;
+        musicNoteIndex = 0;
+        const scheduleNote = () => {
+            if (!battleMusicEnabled || context.state !== "running") return;
+            const startAt = context.currentTime + 0.03;
+            const frequency = battleTheme[musicNoteIndex % battleTheme.length];
+            playTone(context, frequency, startAt, 0.2, "triangle", 0.025);
+            if (musicNoteIndex % 4 === 0) {
+                playTone(context, frequency / 2, startAt, 0.34, "sine", 0.018);
+            }
+            musicNoteIndex++;
+        };
+        scheduleNote();
+        if (musicTimer !== null) window.clearInterval(musicTimer);
+        musicTimer = window.setInterval(scheduleNote, 240);
+        battleAudioStatus.textContent = "Música de batalha original ativada.";
+        updateBattleAudioControls();
+    }
     const movePickerMessage = document.querySelector("#move-picker-message");
     const movePickerConfirm = document.querySelector("#confirm-move-selection");
     const pickerCount = document.querySelector("#pokemon-picker-count");
@@ -1113,18 +1212,22 @@ window.PokedexApp.battle = (() => {
         const percent = Math.max(0, Math.round(member.currentHp / member.maxHp * 100));
         const effectKey = `${teamIndex}:${memberIndex}`;
         const effects = game.visualEffects;
+        const itemEffect = effects?.itemEffects.get(effectKey);
         const isCurrentAttacker = game.currentResolution?.teamIndex === teamIndex
             && game.currentResolution?.attackerIndex === memberIndex;
-        const hpBefore = effects?.damagedBefore.get(effectKey) ?? member.currentHp;
+        const hpBefore = effects?.damagedBefore.get(effectKey)
+            ?? effects?.healedBefore.get(effectKey)
+            ?? member.currentHp;
         const critical = percent <= 25;
         const types = getMemberTypeNames(member)
             .map((type) => `<span class="type-tag type-${escapeHTML(type)}">${typeLabel(type)}</span>`).join("")
             || '<span class="type-tag">Sem tipo</span>';
         const displayName = member.megaEvolved ? member.pokemon.name : member.entry.name;
-        return `<article class="arena-pokemon ${isCurrentAttacker ? "is-current-attacker" : ""} ${effects?.attackers.has(effectKey) ? "is-attacking" : ""} ${effects?.hitMembers.has(effectKey) ? "is-hit" : ""} ${effects?.megaEvolved.has(effectKey) ? "is-mega-evolving" : ""} ${critical ? "is-critical" : ""}"
+        return `<article class="arena-pokemon ${isCurrentAttacker ? "is-current-attacker" : ""} ${effects?.attackers.has(effectKey) ? "is-attacking" : ""} ${effects?.hitMembers.has(effectKey) ? "is-hit" : ""} ${effects?.healedMembers.has(effectKey) ? "is-item-healing" : ""} ${itemEffect ? `is-item-${itemEffect.kind}` : ""} ${effects?.megaEvolved.has(effectKey) ? "is-mega-evolving" : ""} ${critical ? "is-critical" : ""}"
             data-team-index="${teamIndex}" data-active-slot="${activeSlot}">
             <div class="arena-pokemon-art">
                 <img src="${escapeHTML(imageUrl(member.pokemon))}" alt="${formatName(displayName)}">
+                ${itemEffect ? `<span class="item-effect-burst is-${itemEffect.kind}">${escapeHTML(itemEffect.label)}</span>` : ""}
             </div>
             <div class="arena-pokemon-info">
                 <span class="arena-pokemon-number">#${String(member.entry.id).padStart(4, "0")}</span>
@@ -1134,7 +1237,7 @@ window.PokedexApp.battle = (() => {
                     ${formatName(member.heldItem.replace(/_/g, "-"))}
                 </span>` : ""}
                 <span class="arena-pokemon-types">${types}</span>
-                <div class="battle-hp-track"><span class="battle-hp-fill ${critical ? "low" : ""} ${effects?.hitMembers.has(effectKey) ? "hp-draining" : ""}"
+                <div class="battle-hp-track"><span class="battle-hp-fill ${critical ? "low" : ""} ${effects?.hitMembers.has(effectKey) ? "hp-draining" : ""} ${effects?.healedMembers.has(effectKey) ? "hp-restoring" : ""}"
                     style="--hp-from:${hpBefore / member.maxHp};--hp-to:${member.currentHp / member.maxHp}"></span></div>
                 <span class="arena-hp-text ${critical ? "is-critical" : ""}">${member.currentHp}/${member.maxHp} HP</span>
             </div>
@@ -1617,6 +1720,7 @@ window.PokedexApp.battle = (() => {
     function registerAction(action) {
         const actions = game.pendingActions[action.teamIndex];
         if (actions.some(({ activeSlot }) => activeSlot === action.activeSlot)) return;
+        if (soundEffectsEnabled) getAudioContext();
         game.pendingMega.delete(`${action.teamIndex}:${action.activeSlot}`);
         actions.push(action);
         if (actions.length < getActiveActors(action.teamIndex).length) {
@@ -2130,6 +2234,7 @@ window.PokedexApp.battle = (() => {
         if (!game.visualEffects.damagedBefore.has(effectKey)) {
             game.visualEffects.damagedBefore.set(effectKey, member.currentHp);
         }
+        if (!game.visualEffects.hitMembers.has(effectKey)) playSoundEffect("hit");
         game.visualEffects.hitMembers.add(effectKey);
         member.currentHp -= damage;
         return damage;
@@ -2137,8 +2242,13 @@ window.PokedexApp.battle = (() => {
 
     function applyEntryHazards(teamIndex, memberIndex) {
         const member = game.teams[teamIndex].members[memberIndex];
-        if (member.heldItem === "heavy_duty_boots") return;
         const hazards = game.fieldEffects.hazards[teamIndex];
+        if (member.heldItem === "heavy_duty_boots") {
+            if (hazards.stealthRock || hazards.spikes || hazards.toxicSpikes || hazards.stickyWeb) {
+                recordItemEffect(teamIndex, memberIndex, "defense", "Heavy-Duty Boots · sem dano");
+            }
+            return;
+        }
         if (member.currentHp <= 0) return;
         const types = getMemberTypeNames(member);
         const grounded = isGrounded(member);
@@ -2186,6 +2296,30 @@ window.PokedexApp.battle = (() => {
         if (member.moveEffects?.healBlockTurns > 0) return 0;
         const healed = Math.min(member.maxHp - member.currentHp, Math.max(0, Math.floor(amount)));
         member.currentHp += healed;
+        return healed;
+    }
+
+    function recordItemEffect(teamIndex, memberIndex, kind, label, hpBefore = null) {
+        if (!game.visualEffects || memberIndex < 0) return;
+        const effectKey = `${teamIndex}:${memberIndex}`;
+        game.visualEffects.itemEffects.set(effectKey, { kind, label });
+        if (kind === "heal") {
+            if (!game.visualEffects.healedBefore.has(effectKey)) {
+                const currentHp = game.teams[teamIndex].members[memberIndex].currentHp;
+                game.visualEffects.healedBefore.set(effectKey, hpBefore ?? currentHp);
+            }
+            game.visualEffects.healedMembers.add(effectKey);
+            playSoundEffect("heal");
+        } else {
+            playSoundEffect("item");
+        }
+    }
+
+    function healWithHeldItem(teamIndex, memberIndex, amount, itemName) {
+        const member = game.teams[teamIndex].members[memberIndex];
+        const hpBefore = member.currentHp;
+        const healed = healMember(member, amount);
+        if (healed) recordItemEffect(teamIndex, memberIndex, "heal", `+${healed} HP · ${itemName}`, hpBefore);
         return healed;
     }
 
@@ -2394,6 +2528,9 @@ window.PokedexApp.battle = (() => {
         member.status = null;
         member.heldItem = null;
         game.log.push(`${plainName(member.entry.name)} consumiu Lum Berry e curou sua condição de status.`);
+        const teamIndex = member.teamIndex;
+        const memberIndex = game.teams[teamIndex].members.indexOf(member);
+        recordItemEffect(teamIndex, memberIndex, "cure", "Lum Berry · status curado");
         return true;
     }
 
@@ -2966,10 +3103,12 @@ window.PokedexApp.battle = (() => {
             && !getMemberTypeNames(member).includes("fire")) {
             member.status = { name: "burn", turnsRemaining: 0, toxicStage: 0 };
             game.log.push(`${name} foi queimado pelo Flame Orb.`);
+            recordItemEffect(teamIndex, memberIndex, "status", "Flame Orb · queimado");
         } else if (member.heldItem === "toxic_orb" && !member.status
             && !getMemberTypeNames(member).some((type) => ["poison", "steel"].includes(type))) {
             member.status = { name: "toxic", turnsRemaining: 0, toxicStage: 1 };
             game.log.push(`${name} foi gravemente envenenado pelo Toxic Orb.`);
+            recordItemEffect(teamIndex, memberIndex, "status", "Toxic Orb · envenenado");
         }
 
         consumeLumBerry(member);
@@ -2978,22 +3117,23 @@ window.PokedexApp.battle = (() => {
             && ["sitrus_berry", "oran_berry"].includes(member.heldItem)) {
             const amount = member.heldItem === "sitrus_berry" ? member.maxHp / 4 : 10;
             const berry = member.heldItem === "sitrus_berry" ? "Sitrus Berry" : "Oran Berry";
-            const healed = healMember(member, amount);
+            const healed = healWithHeldItem(teamIndex, memberIndex, amount, berry);
             member.heldItem = null;
             if (healed) game.log.push(`${name} consumiu ${berry} e recuperou ${healed} HP.`);
         }
         if (member.currentHp > 0 && member.heldItem === "leftovers") {
-            const healed = healMember(member, member.maxHp / 16);
+            const healed = healWithHeldItem(teamIndex, memberIndex, member.maxHp / 16, "Leftovers");
             if (healed) game.log.push(`${name} recuperou ${healed} HP com Leftovers.`);
         }
         if (member.currentHp > 0 && member.heldItem === "black_sludge") {
             if (getMemberTypeNames(member).includes("poison")) {
-                const healed = healMember(member, member.maxHp / 16);
+                const healed = healWithHeldItem(teamIndex, memberIndex, member.maxHp / 16, "Black Sludge");
                 if (healed) game.log.push(`${name} recuperou ${healed} HP com Black Sludge.`);
             } else {
                 const damage = Math.max(1, Math.floor(member.maxHp / 8));
                 recordDamage(teamIndex, memberIndex, damage);
                 game.log.push(`${name} sofreu ${damage} de dano por Black Sludge.`);
+                recordItemEffect(teamIndex, memberIndex, "damage", `Black Sludge · -${damage} HP`);
             }
         }
     }
@@ -3050,7 +3190,8 @@ window.PokedexApp.battle = (() => {
         game.currentResolution.phase = "impact";
         game.visualEffects.attackers.clear();
         renderBattle(true);
-        await waitForAnimation(game.visualEffects.hitMembers.size ? 850 : 500);
+        const hasItemEffect = game.visualEffects.itemEffects.size || game.visualEffects.healedMembers.size;
+        await waitForAnimation(game.visualEffects.hitMembers.size || hasItemEffect ? 850 : 500);
         game.currentResolution.impactShown = true;
     }
 
@@ -3101,6 +3242,7 @@ window.PokedexApp.battle = (() => {
             return;
         }
         game.visualEffects.attackers.add(`${action.teamIndex}:${action.attackerIndex}`);
+        playSoundEffect("attack");
         if (game.currentResolution) {
             game.currentResolution.phase = "attacking";
             renderBattle(true);
@@ -3259,6 +3401,7 @@ window.PokedexApp.battle = (() => {
                 if (sashActivated) {
                     damage = Math.max(0, target.member.currentHp - 1);
                     target.member.heldItem = null;
+                    recordItemEffect(target.teamIndex, target.memberIndex, "defense", "Focus Sash · resistiu");
                 }
                 let dealt = 0;
                 let substituteAbsorbed = 0;
@@ -3274,6 +3417,11 @@ window.PokedexApp.battle = (() => {
                 if (dealt > 0) {
                     target.member.damageTakenThisTurn = dealt;
                     target.member.lastDamageClassThisTurn = move.damage_class.name;
+                    const itemMultiplier = getHeldItemDamageMultiplier(attacker, move, moveType, effectiveness);
+                    if (itemMultiplier > 1) {
+                        const itemName = formatName(attacker.heldItem.replace(/_/g, "-"));
+                        recordItemEffect(action.teamIndex, action.attackerIndex, "boost", `${itemName} · dano aumentado`);
+                    }
                 }
                 totalDamage += dealt;
                 successful = dealt > 0 || successful;
@@ -3293,12 +3441,16 @@ window.PokedexApp.battle = (() => {
                         Math.min(6, (target.member.statStages["special-attack"] || 0) + 2);
                     target.member.heldItem = null;
                     game.log.push(`${plainName(target.member.entry.name)} ativou Weakness Policy e aumentou Ataque e Ataque Especial.`);
+                    recordItemEffect(target.teamIndex, target.memberIndex, "boost", "Weakness Policy · ataque aumentado");
                 }
                 if (dealt > 0 && move.flags?.some(({ name }) => name === "contact")
                     && target.member.heldItem === "rocky_helmet" && attacker.currentHp > 0) {
                     const recoil = Math.max(1, Math.floor(attacker.maxHp / 6));
                     const helmetDamage = recordDamage(action.teamIndex, action.attackerIndex, recoil);
                     game.log.push(`Rocky Helmet causou ${helmetDamage} de dano a ${attackerName}.`);
+                    if (helmetDamage) {
+                        recordItemEffect(action.teamIndex, action.attackerIndex, "damage", `Rocky Helmet · -${helmetDamage} HP`);
+                    }
                     if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo Rocky Helmet.`);
                 }
                 if (target.member.currentHp === 0) game.log.push(`${plainName(target.member.entry.name)} foi derrotado.`);
@@ -3391,13 +3543,14 @@ window.PokedexApp.battle = (() => {
             if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo recuo.`);
         }
         if (totalHitDamage > 0 && attacker.currentHp > 0 && attacker.heldItem === "shell_bell") {
-            const healed = healMember(attacker, totalHitDamage / 8);
+            const healed = healWithHeldItem(action.teamIndex, action.attackerIndex, totalHitDamage / 8, "Shell Bell");
             if (healed) game.log.push(`${attackerName} recuperou ${healed} HP com Shell Bell.`);
         }
         if (totalHitDamage > 0 && attacker.currentHp > 0 && attacker.heldItem === "life_orb") {
             const recoil = Math.max(1, Math.floor(attacker.maxHp / 10));
             const received = recordDamage(action.teamIndex, action.attackerIndex, recoil);
             game.log.push(`${attackerName} perdeu ${received} HP pelo recuo de Life Orb.`);
+            if (received) recordItemEffect(action.teamIndex, action.attackerIndex, "damage", `Life Orb · -${received} HP`);
             if (attacker.currentHp === 0) game.log.push(`${attackerName} foi derrotado pelo recuo de Life Orb.`);
         }
 
@@ -3463,6 +3616,9 @@ window.PokedexApp.battle = (() => {
             attackers: new Set(),
             hitMembers: new Set(),
             damagedBefore: new Map(),
+            itemEffects: new Map(),
+            healedMembers: new Set(),
+            healedBefore: new Map(),
             megaEvolved: new Set()
         };
         game.teams.forEach((team) => team.members.forEach((member) => {
@@ -3542,33 +3698,48 @@ window.PokedexApp.battle = (() => {
             game.visualEffects.attackers.clear();
             game.visualEffects.hitMembers.clear();
             game.visualEffects.damagedBefore.clear();
+            game.visualEffects.itemEffects.clear();
+            game.visualEffects.healedMembers.clear();
+            game.visualEffects.healedBefore.clear();
             renderBattle(true);
             await waitForAnimation(240);
             await resolveMoveAction(action);
             if (!game.currentResolution.impactShown) {
-                if (game.visualEffects.hitMembers.size) {
+                if (game.visualEffects.hitMembers.size || game.visualEffects.itemEffects.size
+                    || game.visualEffects.healedMembers.size) {
                     await showMoveImpact();
                 } else {
                     game.currentResolution.phase = "impact";
                     renderBattle(true);
                     await waitForAnimation(450);
                 }
+            } else if (game.visualEffects.itemEffects.size || game.visualEffects.healedMembers.size) {
+                game.currentResolution.phase = "impact";
+                renderBattle(true);
+                await waitForAnimation(850);
             }
             game.visualEffects.attackers.clear();
             game.visualEffects.hitMembers.clear();
             game.visualEffects.damagedBefore.clear();
+            game.visualEffects.itemEffects.clear();
+            game.visualEffects.healedMembers.clear();
+            game.visualEffects.healedBefore.clear();
             game.currentResolution.phase = "complete";
             renderBattle(true);
             await waitForAnimation(180);
         }
 
         applyEndTurnStatusDamage();
-        if (game.visualEffects.hitMembers.size) {
+        if (game.visualEffects.hitMembers.size || game.visualEffects.itemEffects.size
+            || game.visualEffects.healedMembers.size) {
             game.currentResolution = null;
             renderBattle(true);
             await waitForAnimation(850);
             game.visualEffects.hitMembers.clear();
             game.visualEffects.damagedBefore.clear();
+            game.visualEffects.itemEffects.clear();
+            game.visualEffects.healedMembers.clear();
+            game.visualEffects.healedBefore.clear();
         }
         decrementFieldEffects();
         clearFaintedSlots(0);
@@ -3576,6 +3747,7 @@ window.PokedexApp.battle = (() => {
         const survivors = game.teams.map((team) => team.members.some((member) => member.currentHp > 0));
         if (!survivors[0] || !survivors[1]) {
             game.winner = survivors[0] === survivors[1] ? -1 : survivors[0] ? 0 : 1;
+            stopBattleMusic();
         } else {
             game.turn++;
         }
@@ -3588,6 +3760,8 @@ window.PokedexApp.battle = (() => {
     }
 
     function returnToSetup() {
+        stopBattleMusic();
+        battleAudioStatus.textContent = "";
         game = null;
         battleView.hidden = true;
         setupView.hidden = false;
@@ -3685,6 +3859,24 @@ window.PokedexApp.battle = (() => {
     movePickerNext.addEventListener("click", () => {
         movePickerPage++;
         renderMovePicker();
+    });
+    battleMusicButton.addEventListener("click", () => {
+        if (battleMusicEnabled) {
+            stopBattleMusic();
+            battleAudioStatus.textContent = "Música de batalha desativada.";
+        } else {
+            startBattleMusic();
+        }
+    });
+    battleSfxButton.addEventListener("click", () => {
+        soundEffectsEnabled = !soundEffectsEnabled;
+        if (soundEffectsEnabled) {
+            getAudioContext();
+            battleAudioStatus.textContent = "Efeitos sonoros ativados.";
+        } else {
+            battleAudioStatus.textContent = "Efeitos sonoros desativados.";
+        }
+        updateBattleAudioControls();
     });
     pickerPrev.addEventListener("click", () => {
         if (pickerPage <= 1) return;
