@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#11131a">
+    <meta name="description" content="Monte dois times de seis Pokémon e batalhe em uma partida local por turnos.">
+    <title>Batalha Pokémon — Arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/sections/battle.css">
+    <script src="./js/config.js" defer></script>
+    <script src="./js/state.js" defer></script>
+    <script src="./js/utils.js" defer></script>
+    <script src="./js/api.js" defer></script>
+    <script src="./js/battle.js" defer></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="Pokédex Arena, início">
+            <span class="brand-mark" aria-hidden="true"><span></span></span>
+            <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
+        </a>
+        <nav class="top-nav" aria-label="Navegação principal">
+            <a class="nav-link" href="./index.html#catalogo">Pokédex</a>
+            <a class="nav-link active" href="./batalha.html" aria-current="page">Batalha</a>
+            <a class="nav-link" href="./index.html#sobre">Sobre os dados</a>
+        </nav>
+        <a class="status-pill" href="https://pokeapi.co/" target="_blank" rel="noreferrer">
+            <span class="status-dot"></span> DADOS DA POKÉAPI
+        </a>
+    </header>
+
+    <main class="battle-page">
+        <section class="battle-hero">
+            <p class="eyebrow"><span class="eyebrow-line"></span> ARENA LOCAL</p>
+            <h1>Monte seu time.<br><span>Teste a estratégia.</span></h1>
+            <p>Dois jogadores, seis Pokémon para cada lado e batalhas por turnos.</p>
+        </section>
+
+        <section class="battle-setup" id="battle-setup">
+            <div class="battle-section-heading">
+                <div>
+                    <p class="eyebrow"><span class="eyebrow-line"></span> PREPARAÇÃO</p>
+                    <h2>Escolha seus times</h2>
+                </div>
+                <label class="battle-format-control">
+                    <span>Formato</span>
+                    <select id="battle-format">
+                        <option value="1">1v1 · um ativo por lado</option>
+                        <option value="2">2v2 · dois ativos por lado</option>
+                    </select>
+                </label>
+            </div>
+            <p class="battle-rules-note">
+                Cada jogador escolhe seis Pokémon. No modo manual, escolha quatro golpes para cada um.
+                As opções automática e aleatória também estão disponíveis. A simulação aplica precisão,
+                prioridade e ordem por velocidade, incluindo Trick Room e Tailwind, STAB, efetividade,
+                dano fixo e OHKO, golpes de múltiplos acertos, recuperação e partilha de HP, recuo, status
+                básicos, alterações de atributos, Protect, Detect, Quick Guard, Wide Guard, Mat Block, Endure
+                e trocas forçadas ou causadas pelo próprio golpe. Também são simulados efeitos como aprisionamento,
+                Leech Seed, Yawn, Perish Song, Disable, Encore, Taunt, Torment, Nightmare, Ingrain, Aqua Ring,
+                Wish, Rest, Substitute, Destiny Bond, Heal Block, Telekinesis, Smack Down, Tar Shot, Stockpile,
+                Swallow, Spit Up, Transform, Mimic, Sketch, Copycat, Mirror Move, Clear Smog, Psych Up, trocas de
+                atributos, alterações de tipo, Metronome, Helping Hand, Magic Coat, After You, Quash e golpes para
+                remover armadilhas. A simulação inclui clima, terrenos, telas defensivas e armadilhas de entrada.
+                Habilidades, itens e alguns efeitos específicos ainda não são simulados.
+                Quando um Pokémon é derrotado, seu jogador escolhe a reserva que entrará sem consumir a próxima ação.
+                No 2v2, escolha um golpe para cada Pokémon ativo e clique no adversário que deseja atingir.
+                Também é possível trocar voluntariamente um Pokémon pelas reservas durante a vez.
+            </p>
+            <p class="battle-message" id="setup-message" role="status">Carregando Pokémon...</p>
+            <div class="team-builder" id="team-builder"></div>
+            <div class="battle-setup-actions">
+                <button class="battle-primary-button" id="start-battle" type="button" disabled>Iniciar batalha</button>
+            </div>
+        </section>
+
+        <section class="battle-view" id="battle-view" hidden>
+            <div class="battle-section-heading">
+                <div>
+                    <p class="eyebrow"><span class="eyebrow-line"></span> COMBATE</p>
+                    <h2 id="battle-turn">Turno 1</h2>
+                </div>
+                <button class="battle-secondary-button" id="edit-teams" type="button">Editar times</button>
+            </div>
+            <div class="battlefield" id="battlefield"></div>
+            <div class="turn-controls" id="turn-controls"></div>
+            <section class="battle-log-section" aria-labelledby="battle-log-title">
+                <h3 id="battle-log-title">Registro da batalha</h3>
+                <ol class="battle-log" id="battle-log" aria-live="polite"></ol>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <a class="brand footer-brand" href="./index.html" aria-label="Pokédex Arena, início">
+            <span class="brand-mark" aria-hidden="true"><span></span></span>
+            <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
+        </a>
+        <p>Feito para quem pensa cada movimento.</p>
+        <small>Dados fornecidos por <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a>. Projeto
+            de fãs, sem vínculo com a Nintendo ou The Pokémon Company.</small>
+    </footer>
+
+    <dialog class="battle-picker-dialog" id="pokemon-picker-dialog" aria-labelledby="pokemon-picker-title">
+        <div class="picker-dialog-header">
+            <div>
+                <p class="eyebrow"><span class="eyebrow-line"></span> POKÉDEX</p>
+                <h2 id="pokemon-picker-title">Escolher Pokémon</h2>
+                <p id="pokemon-picker-context">Selecione um Pokémon para o time.</p>
+            </div>
+            <button class="picker-close" id="pokemon-picker-close" type="button" aria-label="Fechar Pokédex">×</button>
+        </div>
+        <label class="picker-search">
+            <span class="sr-only">Buscar Pokémon por nome ou número</span>
+            <span class="search-icon" aria-hidden="true"></span>
+            <input id="pokemon-picker-search" type="search" autocomplete="off" placeholder="Buscar por nome ou número">
+        </label>
+        <div class="picker-result-line">
+            <p id="pokemon-picker-count" role="status">Carregando Pokémon...</p>
+            <button class="picker-retry" id="pokemon-picker-retry" type="button" hidden>Tentar novamente</button>
+        </div>
+        <div class="picker-grid-wrap">
+            <div class="pokemon-grid picker-grid" id="pokemon-picker-grid" aria-live="polite"></div>
+        </div>
+        <nav class="pagination picker-pagination" id="pokemon-picker-pagination" aria-label="Páginas da Pokédex">
+            <button class="page-button" id="pokemon-picker-prev" type="button" aria-label="Página anterior">‹</button>
+            <span id="pokemon-picker-page">Página 1 de 1</span>
+            <button class="page-button" id="pokemon-picker-next" type="button" aria-label="Próxima página">›</button>
+        </nav>
+    </dialog>
+
+    <dialog class="switch-picker-dialog" id="switch-picker-dialog" aria-labelledby="switch-picker-title">
+        <div class="picker-dialog-header">
+            <div>
+                <p class="eyebrow"><span class="eyebrow-line"></span> TROCA DE POKÉMON</p>
+                <h2 id="switch-picker-title">Escolher reserva</h2>
+                <p id="switch-picker-context">Selecione um Pokémon para entrar na batalha.</p>
+            </div>
+            <button class="picker-close" id="switch-picker-close" type="button" aria-label="Fechar lista de reservas">×</button>
+        </div>
+        <div class="switch-picker-list" id="switch-picker-list" aria-live="polite"></div>
+    </dialog>
+</body>
+
+</html>

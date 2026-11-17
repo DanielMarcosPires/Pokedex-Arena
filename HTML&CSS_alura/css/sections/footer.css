@@ -1,0 +1,45 @@
+.footer {
+    min-height: 95px;
+    padding: 22px max(calc((100vw - 1200px) / 2), 6.2%);
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-brand {
+    font-size: 10px;
+}
+
+.footer-brand .brand-mark {
+    width: 21px;
+    height: 21px;
+}
+
+.footer-brand .brand-mark:before {
+    top: 8px;
+}
+
+.footer-brand .brand-mark span {
+    width: 7px;
+    height: 7px;
+}
+
+.footer p {
+    color: #a2a4ad;
+    font-size: 10px;
+    text-align: center;
+    margin: 0;
+}
+
+.footer small {
+    color: #777a85;
+    font-size: 9px;
+    text-align: right;
+    line-height: 1.5;
+}
+
+.footer small a {
+    color: var(--accent);
+}

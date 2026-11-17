@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#11131a">
+    <meta name="description"
+        content="Explore a Pokédex competitiva com atributos, habilidades, tipos e informações de batalha de todos os Pokémon.">
+    <title>Pokédex Competitiva — Arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/config.js" defer></script>
+    <script src="./js/state.js" defer></script>
+    <script src="./js/dom.js" defer></script>
+    <script src="./js/utils.js" defer></script>
+    <script src="./js/api.js" defer></script>
+    <script src="./js/details.js" defer></script>
+    <script src="./js/catalog.js" defer></script>
+    <script src="./js/app.js" defer></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="#" aria-label="Pokédex Arena, início">
+            <span class="brand-mark" aria-hidden="true"><span></span></span>
+            <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
+        </a>
+        <nav class="top-nav" aria-label="Navegação principal">
+            <a class="nav-link active" href="#catalogo">Pokédex</a>
+            <a class="nav-link" href="./batalha.html">Batalha</a>
+            <a class="nav-link" href="#sobre">Sobre os dados</a>
+        </nav>
+        <a class="status-pill" href="https://pokeapi.co/" target="_blank" rel="noreferrer">
+            <span class="status-dot"></span> DADOS DA POKÉAPI
+        </a>
+    </header>
+
+    <main>
+        <section class="hero" id="sobre">
+            <div class="hero-copy">
+                <p class="eyebrow">
+                    <span class="eyebrow-line"></span> SEU GUIA DE BATALHA
+                </p>
+                <h1>
+                    Conheça o campo.<br>
+                    <span>Domine a batalha.</span>
+                </h1>
+                <p class="hero-description">
+                    Explore atributos, habilidades e combinações de tipos para montar sua
+                    estratégia. Todo o universo Pokémon, em um só lugar.
+                </p>
+                <a class="hero-cta" href="#catalogo">
+                    EXPLORAR POKÉMON <span aria-hidden="true">↓</span>
+                </a>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <div class="hero-orbit orbit-one"></div>
+                <div class="hero-orbit orbit-two"></div>
+                <div class="hero-ball"><span></span></div>
+                <span class="hero-spark spark-one">✦</span>
+                <span class="hero-spark spark-two">✧</span>
+                <span class="hero-index">#001 — #∞</span>
+            </div>
+            <div class="hero-bottom">
+                <div>
+                    <strong id="hero-count">—</strong>
+                    <span> Pokémon no catálogo</span>
+                </div>
+                <p>ESTRATÉGIA COMEÇA COM CONHECIMENTO</p>
+            </div>
+        </section>
+
+        <section class="catalog section-wrap" id="catalogo">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">
+                        <span class="eyebrow-line"></span> 
+                        BASE DE DADOS
+                    </p>
+                    <h2>
+                        Pokédex 
+                        <span>competitiva</span>
+                    </h2>
+                </div>
+                <p class="catalog-intro">
+                    Encontre seu próximo parceiro<br>
+                    e descubra o que ele pode fazer.
+                </p>
+            </div>
+
+            <div class="toolbar">
+                <label class="search-box">
+                    <span class="search-icon" aria-hidden="true"></span>
+                    <input id="search-input" type="search" placeholder="Buscar por nome ou número..." autocomplete="off"
+                        aria-label="Buscar Pokémon por nome ou número">
+                    <kbd>/</kbd>
+                </label>
+                <label class="select-wrap">
+                    <span class="sr-only">Filtrar por tipo</span>
+                    <select id="type-filter">
+                        <option value="">Todos os tipos</option>
+                    </select>
+                </label>
+                <label class="select-wrap">
+                    <span class="sr-only">Filtrar por geração</span>
+                    <select id="generation-filter">
+                        <option value="">Todas as gerações</option>
+                        <option value="1">Geração I</option>
+                        <option value="2">Geração II</option>
+                        <option value="3">Geração III</option>
+                        <option value="4">Geração IV</option>
+                        <option value="5">Geração V</option>
+                        <option value="6">Geração VI</option>
+                        <option value="7">Geração VII</option>
+                        <option value="8">Geração VIII</option>
+                        <option value="9">Geração IX</option>
+                    </select>
+                </label>
+                <label class="select-wrap sort-wrap">
+                    <span class="sr-only">Ordenar Pokémon</span>
+                    <select id="sort-filter">
+                        <option value="number">Ordem numérica</option>
+                        <option value="name">Nome (A–Z)</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="result-line">
+                <p id="result-count">Carregando Pokédex...</p>
+                <button class="clear-filters" id="clear-filters" type="button" hidden>Limpar filtros <span
+                        aria-hidden="true">×</span></button>
+            </div>
+
+            <div class="pokemon-grid" id="pokemon-grid" aria-live="polite"></div>
+            <div class="empty-state" id="empty-state" hidden>
+                <span aria-hidden="true">⌕</span>
+                <h3>
+                    Nenhum Pokémon encontrado
+                </h3>
+                <p>
+                    Tente outro nome ou ajuste os filtros.
+                </p>
+            </div>
+            <div class="loading-state" id="loading-state" role="status">
+                <span class="loader"></span>
+                <p>
+                    Conectando à PokéAPI...
+                </p>
+            </div>
+            <div class="error-state" id="error-state" hidden role="alert">
+                <p>
+                    Não foi possível carregar a Pokédex. Verifique sua conexão e tente novamente.
+                </p>
+                <button id="retry-button" type="button">
+                    Tentar novamente.
+                </button>
+            </div>
+            <div class="pagination" id="pagination" hidden>
+                <button id="prev-page" class="page-button" type="button" aria-label="Página anterior">
+                    ←
+                </button>
+                <span id="page-label"></span>
+                <button id="next-page" class="page-button" type="button" aria-label="Próxima página">
+                    →
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <a class="brand footer-brand" href="#" aria-label="Pokédex Arena, início">
+            <span class="brand-mark" aria-hidden="true"><span></span></span>
+            <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
+        </a>
+        <p>Feito para quem pensa cada movimento.</p>
+        <small>Dados fornecidos por <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a>. Projeto
+            de fãs, sem vínculo com a Nintendo ou The Pokémon Company.</small>
+    </footer>
+
+    <dialog class="detail-dialog" id="detail-dialog" aria-labelledby="detail-name">
+        <button class="dialog-close" id="dialog-close" type="button" aria-label="Fechar detalhes">×</button>
+        <div id="detail-content"></div>
+    </dialog>
+</body>
+</html>
