@@ -1880,6 +1880,7 @@ window.PokedexApp.battle = (() => {
                 return;
             }
             renderBattle();
+            if (onlineMode && onlineRole === 0) sendOnlineBattleState();
             return;
         }
 
