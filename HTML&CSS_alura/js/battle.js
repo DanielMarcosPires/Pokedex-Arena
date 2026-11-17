@@ -413,9 +413,9 @@ window.PokedexApp.battle = (() => {
         socket.on("battle:state", (payload) => {
             if (onlineRole !== 1 || !onlineBattleStarted) return;
             try {
-                applyOnlineGameState(payload.state);
                 onlineWaitingForState = false;
                 onlineForcedSwitchPending = false;
+                applyOnlineGameState(payload.state);
             } catch (error) {
                 console.error("Estado online inválido:", error);
                 setOnlineLobbyStatus("Não foi possível sincronizar o estado da batalha.", true);
