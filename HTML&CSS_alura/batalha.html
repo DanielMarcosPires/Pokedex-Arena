@@ -5,29 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#11131a">
-    <meta name="description" content="Monte times de seis Pokémon e batalhe localmente ou online com amigos.">
+    <meta name="description" content="Monte times de seis Pokémon e batalhe localmente ou online com amigos na Pokédex Arena.">
+    
     <link rel="icon" href="./pokemon.png" type="image/x-icon">
     <title>Batalha Pokémon — Arena</title>
+
+    <!-- Fontes do Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos CSS -->
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/sections/battle.css">
+
+    <!-- Scripts Principais e de Configuração -->
     <script src="./js/config.js" defer></script>
     <script src="./js/state.js" defer></script>
     <script src="./js/utils.js" defer></script>
     <script src="./js/api.js" defer></script>
+    
+    <!-- Batalha: Core e Áudio -->
     <script src="./js/battle/core/config.js" defer></script>
     <script src="./js/battle/audio/audio-controls.js" defer></script>
     <script src="./js/battle/audio/audio-effects.js" defer></script>
     <script src="./js/battle/audio/audio-music.js" defer></script>
+    
+    <!-- Batalha: Online -->
     <script src="./js/battle/online/socket-loader.js" defer></script>
     <script src="./js/battle/online/socket-bindings.js" defer></script>
     <script src="./js/battle/online/socket-session.js" defer></script>
     <script src="./js/battle/online/room-actions.js" defer></script>
     <script src="./js/battle/online/team-sync.js" defer></script>
+    
+    <!-- Batalha: Montagem de Time -->
     <script src="./js/battle/team/team-helpers.js" defer></script>
     <script src="./js/battle/team/team-moves.js" defer></script>
     <script src="./js/battle/team/team-slot.js" defer></script>
@@ -38,6 +49,8 @@
     <script src="./js/battle/team/picker-actions.js" defer></script>
     <script src="./js/battle/team/move-picker.js" defer></script>
     <script src="./js/battle/team/team-validation.js" defer></script>
+    
+    <!-- Batalha: Renderização e Turnos -->
     <script src="./js/battle/turn/battle-start.js" defer></script>
     <script src="./js/battle/render/battle-pokemon.js" defer></script>
     <script src="./js/battle/render/battle-field.js" defer></script>
@@ -46,10 +59,14 @@
     <script src="./js/battle/render/switch-actions.js" defer></script>
     <script src="./js/battle/render/battle-targeting.js" defer></script>
     <script src="./js/battle/render/action-panel.js" defer></script>
+    
+    <!-- Batalha: Ações Online -->
     <script src="./js/battle/online/action-renderer.js" defer></script>
     <script src="./js/battle/online/action-sync.js" defer></script>
     <script src="./js/battle/online/state-sync.js" defer></script>
     <script src="./js/battle/online/forced-switch.js" defer></script>
+    
+    <!-- Batalha: Regras e Mecânicas / Efeitos -->
     <script src="./js/battle/rules/type-effectiveness.js" defer></script>
     <script src="./js/battle/rules/damage-calculation.js" defer></script>
     <script src="./js/battle/rules/move-rules.js" defer></script>
@@ -73,12 +90,15 @@
     <script src="./js/battle/turn/setup-return.js" defer></script>
     <script src="./js/battle/turn/battle-events.js" defer></script>
     <script src="./js/battle/core/core.js" defer></script>
+    
+    <!-- Script de Inicialização Global -->
     <script src="./js/battle.js" defer></script>
 </head>
 
 <body>
+    <!-- Cabeçalho Principal -->
     <header class="topbar">
-        <a class="brand" href="./index.html" aria-label="Pokédex Arena, início">
+        <a class="brand" href="./index.html" aria-label="Pokédex Arena, página inicial">
             <span class="brand-mark" aria-hidden="true"><span></span></span>
             <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
         </a>
@@ -88,24 +108,27 @@
             <a class="nav-link" href="./index.html#sobre">Sobre os dados</a>
         </nav>
         <a class="status-pill" href="https://pokeapi.co/" target="_blank" rel="noreferrer">
-            <span class="status-dot"></span> DADOS DA POKÉAPI
+            <span class="status-dot" aria-hidden="true"></span> DADOS DA POKÉAPI
         </a>
     </header>
 
+    <!-- Conteúdo Principal da Batalha -->
     <main class="battle-page">
+        <!-- Seção de Apresentação -->
         <section class="battle-hero">
-            <p class="eyebrow"><span class="eyebrow-line"></span> ARENA LOCAL E ONLINE</p>
+            <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> ARENA LOCAL E ONLINE</p>
             <h1>Monte seu time.<br><span>Teste a estratégia.</span></h1>
-            <p>Dois jogadores, seis Pokémon para cada lado e batalhas por turnos.</p>
+            <p>Dois jogadores, seis Pokémon para cada lado e batalhas por turnos dinâmicas.</p>
         </section>
 
+        <!-- Seção de Configuração / Setup -->
         <section class="battle-setup" id="battle-setup">
             <div class="battle-section-heading">
                 <div>
-                    <p class="eyebrow"><span class="eyebrow-line"></span> PREPARAÇÃO</p>
+                    <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> PREPARAÇÃO</p>
                     <h2>Escolha seus times</h2>
                 </div>
-                <label class="battle-format-control">
+                <label class="battle-format-control" for="battle-format">
                     <span>Formato</span>
                     <select id="battle-format">
                         <option value="1">1v1 · um ativo por lado</option>
@@ -113,6 +136,8 @@
                     </select>
                 </label>
             </div>
+
+            <!-- Lobby Online -->
             <section class="online-lobby" aria-labelledby="online-lobby-title">
                 <div class="online-lobby-copy">
                     <h3 id="online-lobby-title">Jogar online com um amigo</h3>
@@ -131,17 +156,20 @@
                 </div>
                 <p class="online-lobby-status" id="online-lobby-status" role="status" aria-live="polite"></p>
             </section>
+
             <p class="battle-message" id="setup-message" role="status">Carregando Pokémon...</p>
             <div class="team-builder" id="team-builder"></div>
+            
             <div class="battle-setup-actions">
                 <button class="battle-primary-button" id="start-battle" type="button" disabled>Iniciar batalha</button>
             </div>
         </section>
 
+        <!-- Seção de Visualização de Combate -->
         <section class="battle-view" id="battle-view" hidden>
             <div class="battle-section-heading">
                 <div>
-                    <p class="eyebrow"><span class="eyebrow-line"></span> COMBATE</p>
+                    <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> COMBATE</p>
                     <h2 id="battle-turn">Turno 1</h2>
                 </div>
                 <div class="battle-view-controls">
@@ -153,8 +181,10 @@
                     <button class="battle-secondary-button" id="edit-teams" type="button">Editar times</button>
                 </div>
             </div>
+            
             <div class="battlefield" id="battlefield"></div>
             <div class="turn-controls" id="turn-controls"></div>
+            
             <section class="battle-log-section" aria-labelledby="battle-log-title">
                 <h3 id="battle-log-title">Registro da batalha</h3>
                 <ol class="battle-log" id="battle-log" aria-live="polite"></ol>
@@ -162,33 +192,35 @@
         </section>
     </main>
 
+    <!-- Rodapé -->
     <footer class="footer">
-        <a class="brand footer-brand" href="./index.html" aria-label="Pokédex Arena, início">
+        <a class="brand footer-brand" href="./index.html" aria-label="Pokédex Arena, página inicial">
             <span class="brand-mark" aria-hidden="true"><span></span></span>
             <span>POKÉDEX<span class="brand-light"> ARENA</span></span>
         </a>
         <p>Feito para quem pensa cada movimento.</p>
-        <small>Dados fornecidos por <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a>. Projeto
-            de fãs, sem vínculo com a Nintendo ou The Pokémon Company.</small>
+        <small>Dados fornecidos por <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a>. Projeto de fãs, sem vínculo com a Nintendo ou The Pokémon Company.</small>
     </footer>
 
+    <!-- Diálogo: Seletor de Pokémon (Pokédex) -->
     <dialog class="battle-picker-dialog" id="pokemon-picker-dialog" aria-labelledby="pokemon-picker-title">
         <div class="picker-dialog-header">
             <div>
-                <p class="eyebrow"><span class="eyebrow-line"></span> POKÉDEX</p>
+                <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> POKÉDEX</p>
                 <h2 id="pokemon-picker-title">Escolher Pokémon</h2>
                 <p id="pokemon-picker-context">Selecione um Pokémon para o time.</p>
             </div>
             <button class="picker-close" id="pokemon-picker-close" type="button" aria-label="Fechar Pokédex">×</button>
         </div>
+        
         <div id="pokemon-list-view">
             <div class="picker-filters">
-                <label class="picker-search">
+                <label class="picker-search" for="pokemon-picker-search">
                     <span class="sr-only">Buscar Pokémon por nome ou número</span>
                     <span class="search-icon" aria-hidden="true"></span>
                     <input id="pokemon-picker-search" type="search" autocomplete="off" placeholder="Buscar por nome ou número">
                 </label>
-                <label class="picker-generation">
+                <label class="picker-generation" for="pokemon-picker-generation">
                     <span>Geração</span>
                     <select id="pokemon-picker-generation">
                         <option value="">Todas</option>
@@ -204,29 +236,33 @@
                     </select>
                 </label>
             </div>
+            
             <div class="picker-result-line">
                 <p id="pokemon-picker-count" role="status">Carregando Pokémon...</p>
                 <button class="picker-retry" id="pokemon-picker-retry" type="button" hidden>Tentar novamente</button>
             </div>
+            
             <div class="picker-grid-wrap">
                 <div class="pokemon-grid picker-grid" id="pokemon-picker-grid" aria-live="polite"></div>
             </div>
+            
             <nav class="pagination picker-pagination" id="pokemon-picker-pagination" aria-label="Páginas da Pokédex">
                 <button class="page-button" id="pokemon-picker-prev" type="button" aria-label="Página anterior">‹</button>
                 <span id="pokemon-picker-page">Página 1 de 1</span>
                 <button class="page-button" id="pokemon-picker-next" type="button" aria-label="Próxima página">›</button>
             </nav>
         </div>
+
         <section class="pokemon-detail-view" id="pokemon-detail-view" hidden>
             <div id="pokemon-detail-card"></div>
-            <div class="pokemon-detail-summary pokemon-move-buttons" id="pending-move-buttons"
-                aria-label="Golpes escolhidos"></div>
+            <div class="pokemon-detail-summary pokemon-move-buttons" id="pending-move-buttons" aria-label="Golpes escolhidos"></div>
             <div class="pokemon-detail-actions">
                 <button class="battle-primary-button" id="confirm-pokemon-selection" type="button">Adicionar ao time</button>
                 <button class="picker-back-button" id="pokemon-detail-back" type="button">Voltar à Pokédex</button>
             </div>
             <p class="picker-view-message" id="pokemon-detail-message" role="status"></p>
         </section>
+
         <section class="item-picker-view" id="item-picker-view" hidden>
             <div class="picker-view-heading">
                 <h3>Escolher item segurado</h3>
@@ -234,12 +270,13 @@
             </div>
             <div class="item-picker-grid" id="item-picker-grid"></div>
         </section>
+
         <section class="move-picker-view" id="move-picker-view" hidden>
             <div class="picker-view-heading">
                 <h3>Escolher golpes</h3>
                 <button class="picker-back-button" id="move-picker-back" type="button">Voltar</button>
             </div>
-            <label class="picker-search move-picker-search">
+            <label class="picker-search move-picker-search" for="move-picker-search">
                 <span class="sr-only">Buscar golpes por nome</span>
                 <span class="search-icon" aria-hidden="true"></span>
                 <input id="move-picker-search" type="search" autocomplete="off" placeholder="Buscar golpe pelo nome">
@@ -260,15 +297,15 @@
         </section>
     </dialog>
 
+    <!-- Diálogo: Troca de Pokémon -->
     <dialog class="switch-picker-dialog" id="switch-picker-dialog" aria-labelledby="switch-picker-title">
         <div class="picker-dialog-header">
             <div>
-                <p class="eyebrow"><span class="eyebrow-line"></span> TROCA DE POKÉMON</p>
+                <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> TROCA DE POKÉMON</p>
                 <h2 id="switch-picker-title">Escolher reserva</h2>
                 <p id="switch-picker-context">Selecione um Pokémon para entrar na batalha.</p>
             </div>
-            <button class="picker-close" id="switch-picker-close" type="button"
-                aria-label="Fechar lista de reservas">×</button>
+            <button class="picker-close" id="switch-picker-close" type="button" aria-label="Fechar lista de reservas">×</button>
         </div>
         <div class="switch-picker-list" id="switch-picker-list" aria-live="polite"></div>
     </dialog>

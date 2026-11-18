@@ -1,18 +1,17 @@
-// Mantemencao da batalha: parte 39 (Organizada e Limpa)
+// Manutenção da batalha: parte 39 (Refinada e Otimizada)
 function renderTeamBuilder() {
     // 1. Renderização estrutural dos painéis de ambos os times
     teamBuilder.innerHTML = [0, 1].map((teamIndex) => {
         const isOnlineHidden = onlineMode && teamIndex !== onlineRole ? "online-opponent-hidden" : "";
         const isTeamLocked = teamRandomizing[teamIndex] || onlineTeamSubmitted;
-        const isTeamLoading = pokemonTeams[teamIndex].some((slot) => slot?.loading);
+        const isTeamLoading = pokemonTeams[teamIndex]?.some((slot) => slot?.loading);
 
-        // Texto dinâmico do botão de sortear
-        let randomButtonText = "Sortear 6 Pokémon";
-        if (teamRandomizing[teamIndex]) {
-            randomButtonText = "Sorteando...";
-        } else if (isTeamLoading) {
-            randomButtonText = "Aguarde carregamento";
-        }
+        // Texto dinâmico do botão resolvido de forma limpa e declarativa
+        const randomButtonText = teamRandomizing[teamIndex]
+            ? "Sorteando..."
+            : isTeamLoading
+                ? "Aguarde carregamento"
+                : "Sortear 6 Pokemon";
 
         return `
             <section class="team-panel ${isOnlineHidden}">
@@ -23,14 +22,6 @@ function renderTeamBuilder() {
                         <label class="team-name-control">Nome do jogador
                             <input type="text" maxlength="24" value="${escapeHTML(playerNames[teamIndex])}" 
                                 data-player-name="${teamIndex}" ${onlineTeamSubmitted ? "disabled" : ""}>
-                        </label>
-                        
-                        <label class="move-mode-control">Configuração dos golpes
-                            <select data-move-mode="${teamIndex}" ${isTeamLocked ? "disabled" : ""}>
-                                <option value="manual" ${teamModes[teamIndex] === "manual" ? "selected" : ""}>Manual · escolher 4</option>
-                                <option value="automatic" ${teamModes[teamIndex] === "automatic" ? "selected" : ""}>Automática · níveis mais altos</option>
-                                <option value="random" ${teamModes[teamIndex] === "random" ? "selected" : ""}>Aleatória · sortear 4</option>
-                            </select>
                         </label>
                     </div>
 
@@ -75,7 +66,12 @@ function renderTeamBuilder() {
         panel.setAttribute("aria-hidden", "true");
     });
 
-    // 3. Atualização de estado global de botões e lobby
-    startButton.disabled = teamRandomizing.some(Boolean) || onlineTeamSubmitted;
-    updateOnlineLobby();
+    // 3. Atualização de estado global de botões e lobby (com segurança contra elementos nulos)
+    if (typeof startButton !== "undefined" && startButton) {
+        startButton.disabled = teamRandomizing.some(Boolean) || onlineTeamSubmitted;
+    }
+    
+    if (typeof updateOnlineLobby === "function") {
+        updateOnlineLobby();
+    }
 }

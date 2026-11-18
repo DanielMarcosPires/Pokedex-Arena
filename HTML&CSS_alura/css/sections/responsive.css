@@ -1,8 +1,8 @@
 @media (max-width: 900px) {
     .hero-art {
         right: 4%;
-        opacity: .72;
-        transform: scale(.85);
+        opacity: 0.72;
+        transform: scale(0.85);
         transform-origin: center right;
     }
 
@@ -33,7 +33,15 @@
 }
 
 @media (max-width: 650px) {
-   
+
+    /* Se o campo de busca for um input direto ou um wrapper .search-box dentro da toolbar */
+    .toolbar >.search-box {
+        flex: 1 1 100%;
+    }
+    .toolbar >.select-wrap  {
+        width: 100%;
+    }
+
     .topbar {
         height: 64px;
         padding: 0 20px;
@@ -114,9 +122,6 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .search-box {
-        grid-column: 1 / -1;
-    }
 
     .sort-wrap {
         grid-column: auto;

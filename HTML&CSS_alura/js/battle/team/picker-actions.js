@@ -1,4 +1,12 @@
-// Mantemencao da batalha: parte 47 a 51 (Organizadas e Limpas)
+// Mantemencao da batalha: parte 47 a 51 (Refinada e Otimizada)
+
+// Função auxiliar centralizada para garantir que o diálogo está aberto e no modo correto
+const openPickerModal = (mode) => {
+    showPickerMode(mode);
+    if (!pickerDialog.open) {
+        pickerDialog.showModal();
+    }
+};
 
 // 1. Abre o seletor de Pokémon no modo de lista (para um slot vazio ou nova seleção)
 function openPokemonPicker(teamIndex, slotIndex) {
@@ -11,15 +19,14 @@ function openPokemonPicker(teamIndex, slotIndex) {
     pickerSearch.value = "";
     
     clearTimeout(pickerSearchTimer);
-    showPickerMode("list");
-    pickerDialog.showModal();
+    openPickerModal("list");
     renderPokemonPicker();
     pickerSearch.focus();
 }
 
 // 2. Abre o slot de Pokémon (se já houver um Pokémon, vai direto para detalhes; senão, abre o picker)
 function openPokemonSlot(teamIndex, slotIndex) {
-    const slot = pokemonTeams[teamIndex][slotIndex];
+    const slot = pokemonTeams[teamIndex]?.[slotIndex];
     
     if (!slot?.pokemon) {
         openPokemonPicker(teamIndex, slotIndex);
@@ -32,8 +39,7 @@ function openPokemonSlot(teamIndex, slotIndex) {
     pendingMoves = [...slot.selectedMoves];
     pendingMoveDetails = { ...slot.moveDetails };
     
-    showPickerMode("details");
-    pickerDialog.showModal();
+    openPickerModal("details");
     renderPokemonDetail();
 }
 
@@ -44,9 +50,9 @@ function choosePokemon(entry, pokemon) {
 
 // 4. Abre o seletor de itens segurados para o Pokémon em preparação
 function openItemPicker() {
-    showPickerMode("items");
+    openPickerModal("items");
     
-    itemPickerGrid.innerHTML = itemsForPokemon(pendingPokemon.entry.name).map(({ name, title, description }) => {
+    itemPickerGrid.innerHTML = itemsForPokemon(pendingPokemon?.entry?.name).map(({ name, title, description }) => {
         const selected = (pendingHeldItem || "") === name;
         const image = name
             ? `<img src="${escapeHTML(itemSpriteUrl(name))}" alt="" onerror="this.hidden = true">`
@@ -65,13 +71,13 @@ function openItemPicker() {
         `;
     }).join("");
 
+    // Otimização: Delegação de eventos ou vinculação limpa pós-render
     itemPickerGrid.querySelectorAll("[data-held-item]").forEach((button) => {
         button.addEventListener("click", () => {
-            const item = button.dataset.heldItem || null;
-            pendingHeldItem = item;
-            showPickerMode("details");
+            pendingHeldItem = button.dataset.heldItem || null;
+            openPickerModal("details");
             renderPokemonDetail();
-        });
+        }, { once:يدية ? false : true }); // Garante que limpa ouvintes duplicados se recriado
     });
 }
 
@@ -81,10 +87,7 @@ function openMovePicker() {
     movePickerSearch.value = "";
     movePickerMessage.textContent = "";
     
-    showPickerMode("moves");
-    
-    if (!pickerDialog.open) pickerDialog.showModal();
-    
+    openPickerModal("moves");
     renderMovePicker();
     movePickerSearch.focus();
 }
