@@ -1,0 +1,46 @@
+.detail-hero {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 22px;
+    align-items: center;
+    padding: 34px 35px 27px;
+    background: radial-gradient(ellipse at 22% 55%, #353c3a, #1d2029 65%);
+    border-bottom: 1px solid var(--line);
+}
+
+.detail-number {
+    color: var(--accent);
+    font: 600 11px var(--font-display);
+    letter-spacing: .12em;
+}
+
+.detail-title {
+    font: 700 32px var(--font-display);
+    text-transform: capitalize;
+    letter-spacing: -.04em;
+    margin: 8px 0;
+}
+
+.detail-abilities {
+    margin-bottom: 12px;
+}
+
+.detail-abilities-label {
+    display: block;
+    color: #a4a6b0;
+    font: 600 9px var(--font-display);
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+}
+
+.detail-types {
+    display: flex;
+    gap: 7px;
+}
+
+.detail-description {
+    color: #b4b6bf;
+    font-size: 12px;
+    line-height: 1.65;
+    margin: 14px 0 0;
+}

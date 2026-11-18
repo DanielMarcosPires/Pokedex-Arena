@@ -1,0 +1,215 @@
+@import url('../keyframes/keyframes.css');
+.battlefield {
+    margin-top: 8px;
+}
+
+.battle-arena {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #1b2028;
+}
+
+.battle-field-effects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 18px 0;
+}
+
+.battle-field-effects span {
+    border: 1px solid #718b54;
+    border-radius: 20px;
+    background: #252e20;
+    color: #d7edbd;
+    padding: 4px 9px;
+    font: 600 9px var(--font-display);
+}
+
+.battle-order-banner {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    border-bottom: 1px solid #ffffff14;
+    background: #11151d;
+    padding: 8px 18px;
+}
+
+.battle-order-position {
+    display: grid;
+    min-width: 34px;
+    min-height: 30px;
+    place-items: center;
+    border-radius: 4px;
+    background: #293224;
+    color: var(--accent);
+    font: 700 11px var(--font-display);
+}
+
+.battle-order-details {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    color: #d4d7df;
+    font-size: 10px;
+}
+
+.battle-order-details strong {
+    overflow: hidden;
+    color: #f0f1f4;
+    font: 600 11px var(--font-display);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.battle-order-phase {
+    color: var(--accent);
+    font: 600 9px var(--font-display);
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.arena-matchup {
+    position: relative;
+    display: grid;
+    grid-template: 
+    "t1 t2"
+    "t1 t2"/1fr 1fr;
+    align-items: start; 
+    gap: 20px;
+    padding: 22px;
+}
+
+
+/* Time 1 posicionado no canto inferior esquerdo */
+.arena-team-1 {
+    grid-area: t1;
+    width: 100%;
+}
+
+/* Time 2 posicionado no canto superior direito */
+.arena-team-2 {
+    grid-area: t2;
+    width: 100%;
+}
+
+
+.arena-matchup::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 390px;
+    background:
+        radial-gradient(ellipse at 18% 80%, #35412e 0 17%, transparent 18%),
+        radial-gradient(ellipse at 82% 80%, #35412e 0 17%, transparent 18%),
+        linear-gradient(180deg, #252b34 0%, #232b30 49%, #29372a 50%, #1d2722 100%);
+    content: "";
+    pointer-events: none;
+}
+
+.arena-matchup > * {
+    position: relative;
+    z-index: 1;
+}
+
+.arena-side {
+    min-width: 0;
+}
+
+.arena-side.is-turn {
+    padding: 14px;
+    border: 1px solid var(--accent-dark);
+    border-radius: 7px;
+    background: #151820d9;
+    box-shadow: 0 0 18px #9dcc6220;
+}
+
+.arena-side-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.arena-side-heading h3 {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    margin: 0;
+    color: #ececf0;
+    font: 600 13px var(--font-display);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.arena-active-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.arena-pokemon {
+    min-width: 0;
+    min-height: 245px;
+    display: grid;
+    align-content: space-between;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #ffffff20;
+    border-radius: 6px;
+    background: #171a22b8;
+    box-shadow: 0 8px 22px #0003;
+}
+
+.arena-pokemon.is-current-attacker {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px #9dcc6240, 0 0 24px #9dcc6240;
+}
+
+.arena-pokemon.is-targetable {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px #9dcc6240, 0 0 22px #9dcc6240;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.arena-pokemon.is-targetable:hover {
+    transform: translateY(-4px);
+}
+
+.arena-pokemon.is-targetable:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.arena-pokemon.is-critical {
+    border-color: #ff5b54;
+    animation: critical-pulse 1.15s ease-in-out infinite alternate;
+}
+
+.arena-pokemon.is-critical .arena-pokemon-name,
+.arena-hp-text.is-critical {
+    color: #ff7770;
+}
+
+.arena-pokemon-art {
+    position: relative;
+    display: grid;
+    min-height: 138px;
+    place-items: center;
+}
+
+.arena-pokemon-art img {
+    width: min(100%, 160px);
+    height: 145px;
+    object-fit: contain;
+    filter: drop-shadow(0 9px 7px #0008);
+}
+
+.arena-pokemon.is-item-healing .arena-pokemon-art img {
+    animation: item-heal-glow .85s ease-in-out;
+}

@@ -1,0 +1,121 @@
+.pokemon-detail-view[hidden],
+.item-picker-view[hidden],
+.move-picker-view[hidden],
+.move-picker-pagination[hidden] {
+    display: none;
+}
+
+.pokemon-detail-card {
+    display: grid;
+    grid-template-columns: minmax(150px, .7fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #30333e;
+    border-radius: 6px;
+    background: #20232c;
+}
+
+.pokemon-detail-art {
+    display: grid;
+    min-height: 190px;
+    place-items: center;
+    border-radius: 5px;
+    background: radial-gradient(ellipse, #9dcc6220, transparent 70%);
+}
+
+.pokemon-detail-art img {
+    width: min(100%, 210px);
+    height: 190px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.pokemon-detail-info {
+    min-width: 0;
+}
+
+.pokemon-number {
+    color: var(--muted);
+    font: 600 10px var(--font-display);
+}
+
+.pokemon-detail-info h3 {
+    min-width: 0;
+    margin: 5px 0 10px;
+    color: #f0f1f4;
+    font: 600 24px var(--font-display);
+    text-transform: capitalize;
+}
+
+.pokemon-detail-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.pokemon-detail-name-row h3 {
+    overflow: hidden;
+    margin-right: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pokemon-detail-info .type-list {
+    margin: 0;
+}
+
+.pokemon-base-chart-title {
+    margin: 12px 0 7px;
+    color: var(--muted);
+    font: 600 9px var(--font-display);
+    text-transform: uppercase;
+}
+
+.pokemon-detail-stats {
+    display: grid;
+    gap: 7px;
+}
+
+.pokemon-base-stat-row {
+    display: grid;
+    grid-template-columns: minmax(82px, .7fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: 9px;
+}
+
+.pokemon-base-stat-label {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pokemon-base-stat-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #30333e;
+}
+
+.pokemon-base-stat-track > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+}
+
+.pokemon-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.pokemon-detail-actions .battle-primary-button,
+.pokemon-detail-actions .battle-secondary-button,
+.move-picker-confirm {
+    min-height: 38px;
+}

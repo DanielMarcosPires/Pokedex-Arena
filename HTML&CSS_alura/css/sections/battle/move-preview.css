@@ -1,0 +1,33 @@
+.move-preview-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.move-preview-heading strong {
+    overflow: hidden;
+    color: #ececf0;
+    font: 600 10px var(--font-display);
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.move-preview-heading .type-tag {
+    flex: 0 0 auto;
+    padding: 3px 5px;
+    font-size: 7px;
+}
+
+.move-preview-meta {
+    color: #8f92a0;
+    font-size: 8px;
+}
+
+.slot-move-note {
+    margin: 7px 0 0;
+    color: #8f92a0;
+    font-size: 9px;
+    line-height: 1.4;
+}

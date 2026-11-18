@@ -1,3 +1,4 @@
+// Referências e seletores de elementos do DOM da Pokedex (Organizado e Limpo)
 window.PokedexApp.dom = {
     grid: document.querySelector("#pokemon-grid"),
     searchInput: document.querySelector("#search-input"),

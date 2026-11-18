@@ -1,0 +1,8 @@
+.detail-loading {
+    display: grid;
+    min-height: 300px;
+    place-content: center;
+    justify-items: center;
+    color: var(--muted);
+    gap: 12px;
+}

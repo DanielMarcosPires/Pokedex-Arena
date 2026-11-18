@@ -1,0 +1,84 @@
+
+.battle-pass-panel {
+    display: grid;
+    justify-items: start;
+    gap: 10px;
+}
+
+.battle-pass-panel p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.battle-result {
+    color: var(--accent) !important;
+    font: 600 20px var(--font-display);
+}
+
+.battle-log-section {
+    margin-top: 18px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #151820;
+}
+
+.battle-log-section h3 {
+    margin: 0 0 10px;
+    color: #d7d9de;
+    font: 600 12px var(--font-display);
+}
+
+.battle-log {
+    display: grid;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin: 0;
+    padding-left: 20px;
+    color: #b7b9c1;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.battle-log li::marker {
+    color: var(--accent);
+}
+
+.battle-picker-dialog {
+    width: min(1120px, calc(100% - 24px));
+    max-height: min(92vh, 900px);
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid #383b45;
+    border-radius: 7px;
+    background: #171a22;
+    color: var(--text);
+    box-shadow: 0 25px 100px #000b;
+}
+
+.switch-picker-dialog {
+    width: min(660px, calc(100% - 24px));
+    max-height: min(86vh, 760px);
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid #383b45;
+    border-radius: 7px;
+    background: #171a22;
+    color: var(--text);
+    box-shadow: 0 25px 100px #000b;
+}
+
+.switch-picker-dialog::backdrop {
+    background: #08090dcc;
+    backdrop-filter: blur(5px);
+}
+
+.switch-picker-list {
+    display: grid;
+    gap: 8px;
+    max-height: min(58vh, 540px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}

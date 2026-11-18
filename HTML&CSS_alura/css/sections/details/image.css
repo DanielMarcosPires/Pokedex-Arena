@@ -1,0 +1,12 @@
+.detail-image-wrap {
+    height: 195px;
+    display: grid;
+    place-items: center;
+}
+
+.detail-image-wrap img {
+    width: 195px;
+    height: 195px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px #0006);
+}

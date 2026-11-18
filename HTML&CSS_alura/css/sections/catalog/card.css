@@ -1,0 +1,84 @@
+.card-art {
+    height: 152px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 70%, #323843, #242833 58%, #20232c);
+}
+
+.card-art:after {
+    content: "";
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border: 1px solid #ffffff0b;
+    border-radius: 50%;
+}
+
+.card-art img {
+    width: 128px;
+    height: 128px;
+    object-fit: contain;
+    z-index: 1;
+    image-rendering: auto;
+    transition: transform .25s;
+}
+
+.pokemon-card:hover .card-art img {
+    transform: scale(1.09);
+}
+
+.pokemon-number {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    color: #8d909c;
+    font: 600 10px var(--font-display);
+    letter-spacing: .05em;
+    z-index: 2;
+}
+
+.card-info {
+    padding: 12px 13px 14px;
+}
+
+.card-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 9px;
+}
+
+.card-name {
+    font: 600 15px var(--font-display);
+    text-transform: capitalize;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-bst {
+    color: #858894;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.card-stats {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.card-stat-label {
+    color: #858894;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.card-total {
+    color: #d1d2d6;
+    font: 600 10px var(--font-display);
+}

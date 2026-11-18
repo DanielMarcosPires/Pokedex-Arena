@@ -1,0 +1,23 @@
+
+.dialog-retry {
+    border: 1px solid var(--line);
+    background: var(--surface-raised);
+    color: var(--text);
+    border-radius: 3px;
+    padding: 8px 14px;
+}
+
+.detail-meta {
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    color: #a4a6b0;
+    font-size: 10px;
+}
+
+.detail-meta strong {
+    color: #e7e8eb;
+    font-weight: 600;
+}

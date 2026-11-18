@@ -1,0 +1,66 @@
+
+.pokemon-move-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Organiza os golpes em 2 colunas lado a lado */
+    gap: 8px;
+}
+
+.pokemon-move-buttons {
+    margin: 12px 0;
+}
+
+.pokemon-detail-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.pokemon-move-button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 5px 8px;
+    min-width: 0;
+    min-height: 56px;
+    border: 1px solid #30333e;
+    border-radius: 5px;
+    background: #20232c;
+    color: var(--text);
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.pokemon-move-button:hover,
+.pokemon-move-button:focus-visible {
+    border-color: var(--accent);
+    background: #252b21;
+    outline: none;
+}
+
+.pokemon-move-slot-label {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font: 600 8px var(--font-display);
+    text-transform: uppercase;
+}
+
+.pokemon-move-button strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #ececf0;
+    font: 600 10px var(--font-display);
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.pokemon-move-button .type-tag {
+    padding: 3px 5px;
+    font-size: 7px;
+}
+
+.pokemon-move-button.is-empty strong {
+    grid-column: 1 / -1;
+}

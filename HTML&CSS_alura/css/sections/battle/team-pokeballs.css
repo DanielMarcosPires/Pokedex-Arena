@@ -1,0 +1,61 @@
+.team-pokeballs {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-pokeball {
+    position: relative;
+    display: block;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    border: 1px solid #11131a;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ef5c5c 0 45%, #22252d 45% 55%, #f4f4f4 55% 100%);
+}
+
+.team-pokeball::before {
+    position: absolute;
+    top: calc(50% - 1px);
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #22252d;
+    content: "";
+    z-index: 1;
+}
+
+.team-pokeball-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    transform: translate(-50%, -50%);
+    border: 1px solid #22252d;
+    border-radius: 50%;
+    background: #f4f4f4;
+    z-index: 2;
+}
+
+.team-pokeball.is-active {
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.team-pokeball.is-defeated {
+    filter: grayscale(1);
+    opacity: .42;
+}
+
+.team-pokeball.is-defeated::after {
+    position: absolute;
+    inset: 1px;
+    border-radius: 50%;
+    background:
+        linear-gradient(45deg, transparent 44%, #ff7770 46% 54%, transparent 56%),
+        linear-gradient(-45deg, transparent 44%, #ff7770 46% 54%, transparent 56%);
+    content: "";
+    z-index: 3;
+}

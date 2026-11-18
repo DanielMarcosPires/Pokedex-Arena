@@ -1,0 +1,23 @@
+@import url('../keyframes/keyframes.css');
+.loading-state,
+.empty-state,
+.error-state {
+    text-align: center;
+    padding: 55px 15px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.loading-state p {
+    margin: 12px 0 0;
+}
+
+.loader {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    border: 2px solid #484b55;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}

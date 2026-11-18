@@ -1,0 +1,13 @@
+.clear-filters {
+    border: 0;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.clear-filters span {
+    font-size: 16px;
+    padding-left: 5px;
+    vertical-align: -1px;
+}

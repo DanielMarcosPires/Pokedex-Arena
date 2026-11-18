@@ -1,0 +1,13 @@
+.mini-stat-track {
+    height: 3px;
+    background: #343742;
+    flex: 1;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.mini-stat-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: inherit;
+}

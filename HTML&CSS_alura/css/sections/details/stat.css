@@ -1,0 +1,24 @@
+
+.stat-name {
+    color: #9b9eaa;
+    font-size: 10px;
+}
+
+.stat-value {
+    color: #e6e7ea;
+    font: 600 10px var(--font-display);
+    text-align: right;
+}
+
+.stat-track {
+    background: #30333e;
+    height: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    background: var(--accent);
+    height: 100%;
+    border-radius: inherit;
+}

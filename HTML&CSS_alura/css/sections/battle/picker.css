@@ -1,0 +1,349 @@
+.battle-picker-dialog::backdrop {
+    background: #08090dcc;
+    backdrop-filter: blur(5px);
+}
+
+.picker-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 17px;
+}
+
+.picker-dialog-header .eyebrow {
+    margin: 0 0 9px;
+}
+
+.picker-dialog-header h2 {
+    margin: 0;
+    font: 600 24px var(--font-display);
+}
+
+.picker-dialog-header p:last-child {
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.picker-close {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text);
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.picker-search {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+}
+
+.picker-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    align-items: end;
+    gap: 10px;
+}
+
+.picker-generation {
+    display: grid;
+    gap: 5px;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.picker-generation select {
+    width: 100%;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0 10px;
+    font: 500 11px var(--font-body);
+}
+
+.picker-generation select:focus {
+    outline: 1px solid var(--accent);
+    border-color: var(--accent);
+}
+
+.picker-search:focus-within {
+    border-color: var(--accent);
+}
+
+.picker-search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font: 12px var(--font-body);
+}
+
+.picker-search input::placeholder {
+    color: #777a86;
+}
+
+.picker-result-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 42px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.picker-result-line p {
+    margin: 0;
+}
+
+.picker-retry {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.picker-retry[hidden],
+.picker-pagination[hidden] {
+    display: none;
+}
+
+.picker-grid-wrap {
+    max-height: min(57vh, 590px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 2px;
+}
+
+.picker-pokemon-card.is-current,
+.picker-pokemon-card.is-current:hover {
+    border-color: var(--accent);
+    background: #22291b;
+}
+
+.picker-pokemon-card:disabled {
+    cursor: not-allowed;
+    opacity: .58;
+}
+
+.picker-pokemon-card:disabled:hover {
+    transform: none;
+}
+
+.picker-card-status {
+    position: absolute;
+    right: 9px;
+    bottom: 9px;
+    z-index: 2;
+    border: 1px solid #ffffff24;
+    border-radius: 3px;
+    background: #171a22d9;
+    color: #d7d9de;
+    padding: 4px 6px;
+    font-size: 8px;
+}
+
+.picker-pagination {
+    padding-top: 16px;
+}
+
+.picker-back-button {
+    min-height: 34px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 0 10px;
+    font: 500 10px var(--font-body);
+    cursor: pointer;
+}
+
+.picker-back-button:hover {
+    color: var(--accent);
+}
+
+.picker-view-message {
+    min-height: 16px;
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.picker-view-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.picker-view-heading h3 {
+    margin: 0;
+    color: #ececf0;
+    font: 600 16px var(--font-display);
+}
+
+.item-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    max-height: min(66vh, 620px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px;
+}
+
+.item-picker-option {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 66px;
+    border: 1px solid #30333e;
+    border-radius: 5px;
+    background: #20232c;
+    color: var(--text);
+    padding: 9px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.item-picker-option:hover,
+.item-picker-option:focus-visible,
+.item-picker-option.is-selected {
+    border-color: var(--accent);
+    background: #252b21;
+    outline: none;
+}
+
+.item-picker-option > img,
+.item-picker-empty-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.item-picker-empty-icon {
+    border: 1px dashed #626675;
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.item-picker-option-copy {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+}
+
+.item-picker-option-copy strong {
+    color: #ececf0;
+    font: 600 10px var(--font-display);
+}
+
+.item-picker-option-copy small {
+    color: var(--muted);
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.item-picker-check {
+    color: var(--accent);
+    font: 600 8px var(--font-display);
+    text-align: right;
+}
+
+.move-picker-search {
+    margin-top: 12px;
+}
+
+.move-picker-list-wrap {
+    max-height: min(58vh, 560px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.move-picker-list {
+    display: grid;
+    gap: 7px;
+}
+
+.move-picker-option {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    border: 1px solid #30333e;
+    border-radius: 5px;
+    background: #20232c;
+    color: var(--text);
+    padding: 9px 11px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.move-picker-option:hover,
+.move-picker-option:focus-visible,
+.move-picker-option.is-selected {
+    border-color: var(--accent);
+    background: #252b21;
+    outline: none;
+}
+
+.move-picker-option-state {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border: 1px solid #555967;
+    border-radius: 4px;
+    color: var(--accent);
+    font-size: 13px;
+}
+
+.move-picker-option .move-preview-heading strong {
+    font-size: 11px;
+}
+
+.move-picker-option > p {
+    grid-column: 2;
+    margin: 5px 0;
+    color: #b7b9c1;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.move-picker-option > .move-preview-meta {
+    grid-column: 2;
+}
+
+.move-picker-pagination {
+    padding-top: 10px;
+}
+
+.move-picker-confirm {
+    display: block;
+    margin: 12px 0 0 auto;
+}

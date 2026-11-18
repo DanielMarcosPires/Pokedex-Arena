@@ -1,6 +1,443 @@
+/* --- Estilos Globais (Direto na pasta css/) --- */
 @import url("./sections/base.css");
+@import url("./reset.css");
 @import url("./sections/header-hero.css");
-@import url("./sections/catalog.css");
 @import url("./sections/footer.css");
-@import url("./sections/details.css");
 @import url("./sections/responsive.css");
+
+/* --- Seção de Batalha --- */
+@import url("./sections/battle/action.css");
+
+@import url("./sections/battle/arena-pokemon.css");
+@import url("./sections/battle/battle-field.css");
+@import url("./sections/battle/battle-page.css");
+@import url("./sections/battle/battle-panel.css");
+@import url("./sections/battle/effects.css");
+@import url("./sections/battle/held-item.css");
+@import url("./sections/battle/move-preview.css");
+@import url("./sections/battle/online-lobby.css");
+@import url("./sections/battle/picker.css");
+@import url("./sections/battle/pokemon-detail.css");
+@import url("./sections/battle/pokemon-move.css");
+@import url("./sections/battle/team-builder.css");
+@import url("./sections/battle/team-pokeballs.css");
+
+/* --- Seção do Catálogo --- */
+@import url("./sections/catalog/card.css");
+@import url("./sections/catalog/catalog.css");
+@import url("./sections/catalog/filter.css");
+@import url("./sections/catalog/loading.css");
+@import url("./sections/catalog/pagination.css");
+@import url("./sections/catalog/pokemon-grid.css");
+@import url("./sections/catalog/result.css");
+@import url("./sections/catalog/search.css");
+@import url("./sections/catalog/section.css");
+@import url("./sections/catalog/select.css");
+@import url("./sections/catalog/state.css");
+@import url("./sections/catalog/stats.css");
+@import url("./sections/catalog/toolbar.css");
+@import url("./sections/catalog/type-pokemon.css");
+
+/* --- Seção de Detalhes --- */
+@import url("./sections/details/body.css");
+@import url("./sections/details/dialog.css");
+@import url("./sections/details/hero.css");
+@import url("./sections/details/image.css");
+@import url("./sections/details/list.css");
+@import url("./sections/details/loading.css");
+@import url("./sections/details/matchups.css");
+@import url("./sections/details/move.css");
+@import url("./sections/details/note.css");
+@import url("./sections/details/retry.css");
+@import url("./sections/details/stat.css");
+
+
+
+@media (max-width: 900px) {
+    .team-builder {
+        grid-template-columns: 1fr;
+    }
+
+    .arena-matchup {
+        gap: 5px;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 650px) {
+    .battle-page {
+        padding: 38px 20px 55px;
+    }
+
+    .battle-view {
+        padding-top: 12px;
+    }
+
+    .battle-view .battle-section-heading {
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .battle-view .battle-section-heading h2 {
+        font-size: 21px;
+    }
+
+    .battle-view-controls {
+        gap: 5px;
+    }
+
+    .battle-audio-button {
+        min-height: 32px;
+        padding: 0 8px;
+        font-size: 8px;
+    }
+
+    .battle-audio-status {
+        width: 100%;
+        text-align: right;
+    }
+
+    .battle-hero {
+        padding: 18px 0 30px;
+    }
+
+    .battle-section-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .online-lobby {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .online-lobby-actions {
+        justify-content: stretch;
+    }
+
+    .online-lobby-actions>button,
+    .online-room-entry {
+        flex: 1 1 130px;
+    }
+
+    .online-room-entry input {
+        width: 100%;
+    }
+
+    .online-lobby-status {
+        text-align: left;
+    }
+
+    .battle-format-control {
+        max-width: none;
+    }
+
+    .battle-format-control select {
+        width: 100%;
+    }
+
+    .team-panel {
+        padding: 12px;
+    }
+
+    .team-panel-heading {
+        grid-template-columns: 1fr;
+    }
+
+    .team-panel-heading h3 {
+        grid-column: auto;
+    }
+
+    .team-panel-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .team-random-button {
+        width: 100%;
+    }
+
+    .team-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .turn-action-list {
+        grid-template-columns: 1fr;
+    }
+
+    .battle-setup-actions,
+    .battle-setup-actions button {
+        width: 100%;
+    }
+
+    .battle-picker-dialog {
+        padding: 15px;
+    }
+
+    .picker-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .picker-dialog-header h2 {
+        font-size: 21px;
+    }
+
+    .pokemon-detail-card {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 12px;
+    }
+
+    .pokemon-detail-art {
+        min-height: 145px;
+    }
+
+    .pokemon-detail-art img {
+        height: 145px;
+    }
+
+    .pokemon-detail-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .item-picker-grid {
+        grid-template-columns: 1fr;
+        max-height: 62vh;
+    }
+
+    .item-picker-option {
+        grid-template-columns: 38px minmax(0, 1fr) max-content;
+        min-height: 58px;
+    }
+
+    .item-picker-option>img,
+    .item-picker-empty-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .pokemon-detail-actions>button {
+        flex: 1 1 auto;
+    }
+
+    .switch-picker-dialog {
+        padding: 15px;
+    }
+
+    /* --- ARENA DINÂMICA CORRIGIDA PARA 1V1 E 2V2 --- */
+    .arena-matchup {
+        grid-template:
+            "t2 t2"
+            "t1 t1" /1fr 1fr;
+        min-height: clamp(340px, 85vw, 380px);
+        padding: 0;
+    }
+
+    .arena-matchup::before {
+        inset: 0;
+        height: auto;
+        background: radial-gradient(ellipse at 22% 84%, #35412e 0 19%, transparent 20%),
+            radial-gradient(ellipse at 82% 22%, #35412e 0 15%, transparent 16%),
+            linear-gradient(160deg, #252b34 0%, #232b30 49%, #29372a 50%, #1d2722 100%);
+    }
+
+    .arena-matchup>.arena-team-1,
+    .arena-matchup>.arena-team-2 {
+        position: absolute;
+        box-sizing: border-box;
+    }
+
+    .arena-team-2 {
+        top: 10px;
+        right: 10px;
+        width: max-content;
+    }
+
+    .arena-team-1 {
+        left: 10px;
+        bottom: 10px;
+        width: max-content;
+    }
+
+    /* ----------------------------------------------- */
+
+    .arena-active-row {
+        gap: 5px;
+    }
+
+    .arena-pokemon {
+        min-height: 0;
+        gap: 4px;
+        padding: 6px;
+    }
+
+    .battle-order-banner {
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 6px 8px;
+        padding: 8px 10px;
+    }
+
+    .battle-order-position {
+        grid-row: span 2;
+    }
+
+    .battle-order-phase {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .battle-field-effects {
+        padding: 8px 10px 0;
+    }
+
+    .arena-team-1 .arena-pokemon {
+        min-height: 98px;
+    }
+
+    .arena-pokemon-art {
+        min-height: 36px;
+    }
+
+    .arena-pokemon-art img {
+        height: 100px;
+        
+    }
+
+    .arena-pokemon-number {
+        display: none;
+    }
+
+    .arena-team-2 .arena-pokemon {
+        min-height: 82px;
+        padding: 5px;
+    }
+
+    .arena-team-2 .arena-pokemon-art {
+        min-height: 28px;
+    }
+
+    .arena-team-2 .arena-pokemon-art img {
+        height: 100px;
+    }
+
+    .arena-team-2 .arena-pokemon-name {
+        font-size: 9px;
+    }
+
+    .arena-team-2 .arena-pokemon-types .type-tag {
+        padding: 2px 3px;
+        font-size: 6px;
+    }
+
+    .arena-matchup.is-doubles .arena-pokemon-types,
+    .arena-matchup.is-doubles .arena-hp-text {
+        display: none;
+    }
+
+    .arena-matchup.is-doubles .arena-pokemon-name {
+        font-size: 8px;
+    }
+
+    .arena-pokemon-info {
+        gap: 2px;
+    }
+
+    .arena-pokemon-name {
+        font-size: 10px;
+    }
+
+    .arena-hp-text {
+        font-size: 9px;
+    }
+
+    .arena-pokemon-empty {
+        min-height: 98px;
+    }
+
+    .arena-side.is-turn {
+        padding: 7px;
+    }
+
+    .arena-side-heading {
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 5px;
+    }
+
+    .arena-side-heading h3 {
+        font-size: 10px;
+    }
+
+    .team-pokeballs {
+        gap: 2px;
+    }
+
+    .team-pokeball {
+        width: 12px;
+        height: 12px;
+    }
+
+    .team-pokeball-center {
+        width: 4px;
+        height: 4px;
+    }
+
+    .turn-controls {
+        margin-top: 6px;
+        padding: 0 2px;
+    }
+
+    .turn-action-panel,
+    .battle-pass-panel {
+        padding: 6px;
+        border: 1px solid #3a3d46;
+        border-radius: 6px;
+        background: #151820f2;
+        box-shadow: 0 8px 24px #0008;
+    }
+
+    .turn-controls h3 {
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .turn-action {
+        padding: 5px;
+    }
+
+    .move-choice-grid {
+        gap: 5px;
+    }
+
+    .move-choice {
+        min-height: 44px;
+        padding: 6px;
+    }
+
+    .move-choice strong {
+        font-size: 9px;
+    }
+
+    .switch-choice {
+        grid-template-columns: 48px minmax(0, 1fr) max-content;
+        gap: 8px;
+    }
+
+    .switch-choice img {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .arena-pokemon.is-item-healing .arena-pokemon-art img,
+    .item-effect-burst,
+    .battle-hp-fill.hp-restoring {
+        animation-duration: .01ms;
+        animation-iteration-count: 1;
+    }
+}

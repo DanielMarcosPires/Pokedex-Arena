@@ -1,0 +1,13 @@
+
+.result-line {
+    min-height: 53px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.result-line p {
+    margin: 0;
+}

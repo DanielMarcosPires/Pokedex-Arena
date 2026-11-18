@@ -1,0 +1,11 @@
+.catalog {
+    padding-top: 72px;
+    padding-bottom: 77px;
+}
+
+.catalog-intro {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 3px;
+}

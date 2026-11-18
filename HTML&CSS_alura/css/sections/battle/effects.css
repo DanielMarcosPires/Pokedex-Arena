@@ -1,0 +1,111 @@
+@import url('../keyframes/keyframes.css');
+.item-effect-burst {
+    position: absolute;
+    z-index: 2;
+    bottom: 8%;
+    left: 50%;
+    width: max-content;
+    max-width: 100%;
+    border: 1px solid currentColor;
+    border-radius: 20px;
+    background: #171a22eF;
+    padding: 5px 8px;
+    color: #d7f6a4;
+    font: 700 8px var(--font-display);
+    text-align: center;
+    transform: translateX(-50%);
+    animation: item-effect-float .85s ease-out both;
+    pointer-events: none;
+}
+
+.item-effect-burst.is-damage {
+    color: #ff9188;
+}
+
+.item-effect-burst.is-boost,
+.item-effect-burst.is-defense {
+    color: #f4d586;
+}
+
+.item-effect-burst.is-status {
+    color: #d6adff;
+}
+
+.item-effect-burst.is-cure {
+    color: #8fe4e1;
+}
+
+
+
+.arena-pokemon.is-mega-evolving .arena-pokemon-art img {
+    animation: mega-form-reveal 1.5s ease both;
+}
+
+.arena-pokemon.is-mega-evolving .arena-pokemon-art::after {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    border: 1px solid #d5ef9b;
+    border-radius: 20px;
+    background: #202a18e8;
+    color: #e4f6c4;
+    padding: 5px 10px;
+    content: "MEGA EVOLUÇÃO";
+    font: 700 8px var(--font-display);
+    letter-spacing: .08em;
+    transform: translateX(-50%);
+    animation: mega-announcement 1.5s ease both;
+}
+
+
+
+.arena-team-2 .arena-pokemon-art img {
+    transform: scaleX(-1);
+}
+
+.arena-team-1 .arena-pokemon.is-attacking .arena-pokemon-art img {
+    animation: attack-right .55s ease-in-out;
+}
+
+.arena-team-2 .arena-pokemon.is-attacking .arena-pokemon-art img {
+    animation: attack-left .55s ease-in-out;
+}
+
+.arena-pokemon.is-hit .arena-pokemon-art {
+    animation: damage-flash .55s ease-in-out;
+}
+
+.arena-pokemon.is-status-hit {
+    border-color: #b995ef;
+    box-shadow: 0 0 0 2px #b995ef38, 0 0 20px #b995ef38;
+}
+
+.arena-pokemon.is-status-hit .arena-pokemon-art {
+    animation: status-damage-flash .8s ease-in-out;
+}
+
+.damage-effect-burst {
+    position: absolute;
+    z-index: 3;
+    top: 8%;
+    left: 50%;
+    width: max-content;
+    border: 1px solid #ff9188a8;
+    border-radius: 20px;
+    background: #271b20ed;
+    padding: 6px 10px;
+    color: #ffaaa1;
+    font: 700 10px var(--font-display);
+    letter-spacing: .04em;
+    text-shadow: 0 1px 8px #000b;
+    transform: translateX(-50%);
+    animation: damage-number-float .9s ease-out both;
+    pointer-events: none;
+}
+
+.damage-effect-burst.is-status {
+    border-color: #c29cf0b8;
+    background: #251d35ed;
+    color: #e0c8ff;
+}
+

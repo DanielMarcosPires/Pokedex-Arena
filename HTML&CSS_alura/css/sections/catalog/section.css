@@ -1,0 +1,26 @@
+.section-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 32px;
+    padding-right: 32px;
+}
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 32px;
+}
+
+.section-heading .eyebrow {
+    margin-bottom: 10px;
+}
+
+.section-heading h2 {
+    font: 600 32px var(--font-display);
+    letter-spacing: -.04em;
+    margin: 0;
+}
+
+.section-heading h2 span {
+    color: var(--accent);
+}
