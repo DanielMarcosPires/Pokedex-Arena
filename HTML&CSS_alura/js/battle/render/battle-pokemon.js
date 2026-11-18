@@ -3,7 +3,7 @@
 // 1. Renderiza o card individual de um Pokémon ativo na arena (incluindo barras de HP, efeitos visuais, itens e animações)
 function renderArenaPokemon(teamIndex, activeSlot) {
     const memberIndex = game.active[teamIndex][activeSlot];
-    
+
     if (memberIndex === null) {
         return `
             <article class="arena-pokemon arena-pokemon-empty">
@@ -14,29 +14,29 @@ function renderArenaPokemon(teamIndex, activeSlot) {
 
     const member = game.teams[teamIndex].members[memberIndex];
     const percent = Math.max(0, Math.round(member.currentHp / member.maxHp * 100));
-    
+
     // Recuperação de efeitos visuais do estado global
     const effectKey = `${teamIndex}:${memberIndex}`;
     const effects = game.visualEffects;
     const itemEffect = effects?.itemEffects.get(effectKey);
     const damageKind = effects?.damageKinds.get(effectKey) || "move";
-    
+
     const isCurrentAttacker = game.currentResolution?.teamIndex === teamIndex &&
         game.currentResolution?.attackerIndex === memberIndex;
-        
+
     const hpBefore = effects?.damagedBefore.get(effectKey) ??
         effects?.healedBefore.get(effectKey) ??
         member.currentHp;
-        
+
     const damageAmount = effects?.damageAmounts.get(effectKey) ||
         Math.max(0, hpBefore - member.currentHp);
-        
+
     const critical = percent <= 25;
-    
+
     const types = getMemberTypeNames(member)
         .map((type) => `<span class="type-tag type-${escapeHTML(type)}">${typeLabel(type)}</span>`)
         .join("") || '<span class="type-tag">Sem tipo</span>';
-        
+
     const displayName = member.megaEvolved ? member.pokemon.name : member.entry.name;
 
     // Montagem dinâmica de classes CSS para animações de dano, cura, ataque e mega evolução
@@ -49,6 +49,8 @@ function renderArenaPokemon(teamIndex, activeSlot) {
         effects?.healedMembers.has(effectKey) ? "is-item-healing" : "",
         itemEffect ? `is-item-${itemEffect.kind}` : "",
         effects?.megaEvolved.has(effectKey) ? "is-mega-evolving" : "",
+        // ADICIONA ESTA LINHA AQUI:
+        effects?.protectedMembers?.has(effectKey) ? "is-protecting" : "",
         critical ? "is-critical" : ""
     ].filter(Boolean).join(" ");
 
@@ -57,10 +59,10 @@ function renderArenaPokemon(teamIndex, activeSlot) {
             <div class="arena-pokemon-art">
                 <img src="${escapeHTML(imageUrl(member.pokemon))}" alt="${formatName(displayName)}">
                 ${effects?.hitMembers.has(effectKey) && damageAmount > 0
-                    ? `<span class="damage-effect-burst ${damageKind === "status" ? "is-status" : ""}" aria-hidden="true">
+            ? `<span class="damage-effect-burst ${damageKind === "status" ? "is-status" : ""}" aria-hidden="true">
                         ${damageKind === "status" ? "STATUS · " : ""}−${damageAmount} HP
                        </span>`
-                    : ""}
+            : ""}
                 ${itemEffect ? `<span class="item-effect-burst is-${itemEffect.kind}">${escapeHTML(itemEffect.label)}</span>` : ""}
             </div>
             
@@ -101,7 +103,7 @@ function teamDisplayName(teamIndex) {
 // 3. Renderiza o painel completo do lado de um time na arena (cabeçalho, status das Pokéballs e Pokémon ativos)
 function renderBattleTeam(teamIndex) {
     const team = game.teams[teamIndex];
-    
+
     const activePokemon = game.active[teamIndex]
         .map((_, activeSlot) => renderArenaPokemon(teamIndex, activeSlot))
         .join("");
@@ -112,7 +114,7 @@ function renderBattleTeam(teamIndex) {
         const active = game.active[teamIndex].includes(memberIndex);
         const status = defeated ? "derrotado" : active ? "ativo" : "disponível";
         const label = `${formatName(member.entry.name)}: ${status}, ${member.currentHp}/${member.maxHp} HP`;
-        
+
         return `
             <span class="team-pokeball ${defeated ? "is-defeated" : active ? "is-active" : "is-available"}"
                 role="img" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">

@@ -14,6 +14,22 @@
         filter: drop-shadow(0 9px 7px #0008);
     }
 }
+@keyframes protect-shield-static {
+    0% {
+        opacity: .15;
+        filter: brightness(1) saturate(.8);
+    }
+
+    42% {
+        opacity: 1;
+        filter: brightness(.8) drop-shadow(0 0 18px #d5ef9b);
+    }
+
+    100% {
+        opacity: 1;
+        filter: drop-shadow(0 9px 7px #0008);
+    }
+}
 
 @keyframes mega-announcement {
     0% {
@@ -30,6 +46,18 @@
     100% {
         opacity: 0;
         transform: translate(-50%, -5px) scale(1.04);
+    }
+}
+@keyframes protect-shield-fade {
+    0% {
+        filter: brightness(1.8) drop-shadow(0 0 22px #70f3ff);
+    }
+    50% {
+        filter: brightness(1.4) drop-shadow(0 0 12px #45c0ff);
+    }
+    100% {
+        opacity: 0.8;
+        filter: brightness(1) drop-shadow(0 0 0px #70f3ff);
     }
 }
 
@@ -195,3 +223,4 @@
         transform: rotate(360deg);
     }
 }
+

@@ -57,7 +57,28 @@
     animation: mega-announcement 1.5s ease both;
 }
 
+.arena-pokemon.is-protecting .arena-pokemon-art::after {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    border: 1px solid #70f3ff;
+    border-radius: 20px;
+    background: #152833e8;
+    color: #a8f5ff;
+    padding: 5px 10px;
+    content: "PROTEGIDO";
+    font: 700 8px var(--font-display);
+    letter-spacing: .08em;
+    transform: translateX(-50%);
+    /* Animação do texto também executa apenas uma vez */
+    animation: mega-announcement 1s ease-out forwards;
+    z-index: 4;
+}
 
+.arena-pokemon.is-protecting .arena-pokemon-art img {
+    /* Usa 'forwards' para executar apenas uma vez e manter o término limpo */
+    animation: protect-shield-fade 1s ease-out forwards !important;
+}
 
 .arena-team-2 .arena-pokemon-art img {
     transform: scaleX(-1);

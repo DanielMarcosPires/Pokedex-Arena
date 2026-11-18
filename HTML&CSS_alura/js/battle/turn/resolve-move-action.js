@@ -63,7 +63,13 @@ async function resolveMoveAction(action) {
         return;
     }
 
-    game.visualEffects?.attackers?.add(`${action.teamIndex}:${action.attackerIndex}`);
+    // Só adiciona a animação de avanço (attacker) se NÃO for um movimento de proteção ou endure
+    const isProtectionMove = PERSONAL_PROTECTION_MOVES?.has(move.name) || move.name === "endure";
+    if (!isProtectionMove) {
+        game.visualEffects?.attackers?.add(`${action.teamIndex}:${action.attackerIndex}`);
+    }else{
+        game.visualEffects?.protectedMembers?.add(`${action.teamIndex}:${action.attackerIndex}`);
+    }
     playSoundEffect("attack");
 
     if (game.currentResolution) {

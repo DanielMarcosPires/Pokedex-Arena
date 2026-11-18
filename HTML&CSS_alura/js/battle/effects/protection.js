@@ -66,20 +66,33 @@ function protectionBlocksMove(action, target) {
     }
 
     // Proteção individual (Protect, Detect, etc.)
+    // Dentro de protectionBlocksMove (quando o ataque é interceptado)
     if (member.protectedTurn === game.turn) {
-        // Garante que o Set existe antes de adicionar
         if (!game.visualEffects.protectedMembers) {
             game.visualEffects.protectedMembers = new Set();
         }
 
-        // Adiciona o efeito usando o formato correto de identificador do membro
-        game.visualEffects.protectedMembers.add(`${target.teamIndex}:${member.index}`);
+        const memberKey = `${target.teamIndex}:${member.index}`;
+        game.visualEffects.protectedMembers.add(memberKey);
 
         game.log.push(`${plainName(member.entry.name)} se protegeu contra ${formatName(action.move.name)}!`);
 
-        // REDENDE A TELA IMEDIATAMENTE PARA MOSTRAR O EFEITO VISUAL E O LOG
-        renderBattle();
+        // SELETOR DO ELEMENTO ALVO QUE RECEBEU O GOLPE
+        const pokemonElement = document.querySelector(`.arena-pokemon-art`);
 
+        if (pokemonElement) {
+            // Remove o escudo estático de espera
+            pokemonElement.classList.remove('has-active-protection');
+
+            // Dispara a animação de impacto do escudo a absorver o golpe
+            pokemonElement.classList.add('is-blocking-hit');
+
+            setTimeout(() => {
+                pokemonElement.classList.remove('is-blocking-hit');
+            }, 600); // Duração da animação de impacto
+        }
+
+        renderBattle();
         return true;
     }
 

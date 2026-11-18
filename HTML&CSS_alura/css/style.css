@@ -21,6 +21,7 @@
 @import url("./sections/battle/pokemon-move.css");
 @import url("./sections/battle/team-builder.css");
 @import url("./sections/battle/team-pokeballs.css");
+@import url("./sections/battle/protect.css");
 
 /* --- Seção do Catálogo --- */
 @import url("./sections/catalog/card.css");
@@ -51,7 +52,9 @@
 @import url("./sections/details/retry.css");
 @import url("./sections/details/stat.css");
 
-
+.arena-side{
+    filter:saturate(1.5)
+}
 
 @media (max-width: 900px) {
     .team-builder {
