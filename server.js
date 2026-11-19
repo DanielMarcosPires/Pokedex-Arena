@@ -64,7 +64,7 @@ function validActionList(actions, teamIndex, turn) {
 function createGameServer() {
     const app = express();
     app.disable("x-powered-by");
-    app.use(express.static(path.join(__dirname, "HTML&CSS_alura")));
+    app.use(express.static(path.join(__dirname, "App")));
     app.get("/health", (_request, response) => response.json({ status: "ok" }));
 
     const server = http.createServer(app);
