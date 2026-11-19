@@ -50,7 +50,7 @@
     width: min(1120px, calc(100% - 24px));
     max-height: min(92vh, 900px);
     padding: 22px;
-    overflow: hidden;
+    overflow-y: auto;
     border: 1px solid #383b45;
     border-radius: 7px;
     background: #171a22;
