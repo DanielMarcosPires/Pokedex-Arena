@@ -99,6 +99,7 @@
     <!-- Script de Inicialização Global -->
     <script src="./js/battle.js" defer></script>
 </head>
+
 <body>
     <!-- Cabeçalho Principal -->
     <header class="topbar">
@@ -118,27 +119,10 @@
 
     <!-- Conteúdo Principal da Batalha -->
     <main class="battle-page">
-        <!-- Seção de Apresentação -->
-        <section class="battle-hero">
-            <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> ARENA LOCAL E ONLINE</p>
-            <h1>Monte seu time.<br><span>Teste a estratégia.</span></h1>
-            <p>Dois jogadores, seis Pokémon para cada lado e batalhas por turnos dinâmicas.</p>
-        </section>
-
         <!-- Seção de Configuração / Setup -->
         <section class="battle-setup" id="battle-setup">
             <div class="battle-section-heading">
-                <div>
-                    <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> PREPARAÇÃO</p>
-                    <h2>Escolha seus times</h2>
-                </div>
-                <label class="battle-format-control" for="battle-format">
-                    <span>Formato</span>
-                    <select id="battle-format">
-                        <option value="1">1v1 · um ativo por lado</option>
-                        <option value="2">2v2 · dois ativos por lado</option>
-                    </select>
-                </label>
+
             </div>
 
             <!-- Lobby Online -->
@@ -149,10 +133,17 @@
                 </div>
                 <div class="online-lobby-actions">
                     <button class="battle-secondary-button" id="create-online-room" type="button">Criar sala</button>
+                    
                     <label class="online-room-entry">
                         <span class="sr-only">Código da sala</span>
                         <input id="online-room-code" type="text" maxlength="6" autocomplete="off"
                             placeholder="Código da sala" aria-label="Código da sala">
+                    </label>
+                    <label class="battle-format-control online-room-entry" for="battle-format">
+                        <select id="battle-format">
+                            <option value="1">Batalha: 1v1</option>
+                            <option value="2">Batalha: 2v2</option>
+                        </select>
                     </label>
                     <button class="battle-secondary-button" id="join-online-room" type="button">Entrar na sala</button>
                     <button class="battle-secondary-button" id="copy-online-room" type="button" hidden>Copiar
@@ -324,7 +315,7 @@
         </div>
         <div class="switch-picker-list" id="switch-picker-list" aria-live="polite"></div>
     </dialog>
-    
+
 </body>
 
 </html>
