@@ -66,7 +66,7 @@
     }
 
     .hero h1 {
-        font-size: 21em;
+        font-size: 3em;
     }
 
     .hero-description {
@@ -178,11 +178,14 @@
     }
 
     .detail-body {
-        padding: 22px 19px 25px;
+        padding:0;
     }
 
     .detail-columns {
-        grid-template-columns: 1fr;
+        grid-template:
+            "sT"
+            "vT"
+            "lA"/1fr !important;
         gap: 0;
     }
 

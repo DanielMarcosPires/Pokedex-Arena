@@ -178,16 +178,17 @@ window.PokedexApp.details = (() => {
         detailContent.innerHTML = `
             <div class="detail-hero">
              <div>
-                <div class="detail-image-wrap">
-                    <img src="${escapeHTML(imageUrl(pokemon))}" alt="${formatName(pokemon.name)}">
-                </div>
+                
                     <div class="detail-abilities">
                          <span class="detail-number">
                             #${String(pokemon.id).padStart(4, "0")} · GERAÇÃO ${generationFor(pokemon.id)}
                             </span>
                             <h2 class="detail-title" id="detail-name">
                                 ${escapeHTML(localizedName)}
-                            </h2>    
+                            </h2>  
+                            <div class="detail-image-wrap">
+                                 <img src="${escapeHTML(imageUrl(pokemon))}" alt="${formatName(pokemon.name)}">
+                            </div>  
                     <div>
                          <span class="detail-abilities-label">
                          HABILIDADES

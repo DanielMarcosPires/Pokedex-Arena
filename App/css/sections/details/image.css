@@ -1,7 +1,7 @@
 .detail-image-wrap {
     height: 195px;
     display: grid;
-    place-items: center;
+    place-items: start;
 }
 
 .detail-image-wrap img {

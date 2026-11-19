@@ -3,6 +3,12 @@
     flex-wrap: wrap;
     gap: 6px;
 }
+@media screen and (max-width:650px) {
+    .matchups > .matchup-chip {
+        width: 100%;
+        text-align: center;
+    }
+}
 
 .matchup-chip {
     border-radius: 3px;

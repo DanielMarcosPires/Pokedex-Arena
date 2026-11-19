@@ -120,6 +120,7 @@
     position: relative;
     z-index: 1;
     max-width: 550px;
+    padding: 0 0 2em 0;
 }
 
 .eyebrow {
@@ -307,7 +308,7 @@
 }
 
 .hero-bottom p {
-    font-size: .6em;
+    font-size: .8em;
     letter-spacing: .14em;
     margin: 0;
 }
