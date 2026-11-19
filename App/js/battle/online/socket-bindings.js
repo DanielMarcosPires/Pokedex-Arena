@@ -33,8 +33,19 @@ function bindOnlineSocket(socket) {
         resetOnlineSession();
     });
 
+    socket.on("room:format-updated", ({ format }) => {
+        console.log("[DBG][guest] room:format-updated recebeu:", format);
+        if (typeof applySyncedBattleFormat === "function") {
+            applySyncedBattleFormat(format);
+        }
+    });
+
     // Sincronização de equipes prontas e início da partida
     socket.on("room:teams-ready", (payload) => {
+        console.log("[DBG][guest] room:teams-ready payload.format:", payload?.format);
+        if (typeof applySyncedBattleFormat === "function" && payload?.format) {
+            applySyncedBattleFormat(payload.format);
+        }
         loadOnlineTeams(payload).catch((error) => {
             console.error("Erro ao preparar os times online:", error);
             setOnlineLobbyStatus("Não foi possível carregar os times da sala.", true);

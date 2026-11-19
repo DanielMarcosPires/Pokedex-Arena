@@ -110,7 +110,8 @@ async function startBattle() {
         }));
 
         // 6. Inicialização do estado global do jogo (`game`)
-        const battleFormat = Number(document.querySelector("#battle-format").value);
+        const rawFormat = Number(document.querySelector("#battle-format")?.value);
+        const battleFormat = rawFormat === 2 ? 2 : 1;
         game = {
             format: battleFormat,
             teams,

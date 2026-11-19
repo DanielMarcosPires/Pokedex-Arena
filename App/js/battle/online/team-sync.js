@@ -7,6 +7,13 @@ async function loadOnlineTeams(payload) {
     if (!Array.isArray(payload?.teams) || payload.teams.length !== 2) {
         throw new Error("O servidor enviou uma configuração de times inválida.");
     }
+
+    console.log("[DBG] loadOnlineTeams recebeu format:", payload?.format, "select atual:", document.querySelector("#battle-format")?.value);
+
+    if (typeof payload.format !== "undefined" && typeof applySyncedBattleFormat === "function") {
+        applySyncedBattleFormat(payload.format);
+    }
+
     
     onlineTeamsLoading = true;
     onlineTeamSubmitted = true;
@@ -72,7 +79,7 @@ async function loadOnlineTeams(payload) {
 
 // 2. Filtra e valida se um Pokémon pode ser selecionado (exclui formulários Mega, Gmax e Dynamax)
 function isSelectablePokemon(pokemon) {
-    return !/(?:-mega(?:-|$)|-(?:gmax|gigantamax|dynamax|eternamax)(?:-|$))/i.test(pokemon.name);
+    return !/(?:-mega(?:-|$)|-(?:gmax|gigantamax|dynamax|eternamax|primal)(?:-|$))/i.test(pokemon.name);
 }
 
 
