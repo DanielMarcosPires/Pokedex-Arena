@@ -70,10 +70,10 @@
         renderPokemonDetail();
     });
     
-    document.querySelector("#move-picker-back").addEventListener("click", () => {
-        showPickerMode("details");
-        renderPokemonDetail();
-    });
+    // document.querySelector("#move-picker-back").addEventListener("click", () => {
+    //     showPickerMode("details");
+    //     renderPokemonDetail();
+    // });
     
     movePickerConfirm.addEventListener("click", confirmMoveSelection);
 

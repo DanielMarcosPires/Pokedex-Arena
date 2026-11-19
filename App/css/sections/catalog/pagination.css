@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     gap: 17px;
-    padding-top: 28px;
+    padding: 8px 0;
     color: #b7b9c1;
     font-size: 1em;
 }
