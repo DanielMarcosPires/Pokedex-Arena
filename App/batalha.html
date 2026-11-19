@@ -79,6 +79,8 @@
     <script src="./js/battle/effects/items.js" defer></script>
     <script src="./js/battle/effects/protection.js" defer></script>
     <script src="./js/battle/effects/stat-effects.js" defer></script>
+
+    <script src="./js/battle/effects/getAilmentLabel.js" defer></script>
     <script src="./js/battle/effects/ailments.js" defer></script>
     <script src="./js/battle/effects/stockpile.js" defer></script>
     <script src="./js/battle/effects/move-condition-effects.js" defer></script>
@@ -97,7 +99,6 @@
     <!-- Script de Inicialização Global -->
     <script src="./js/battle.js" defer></script>
 </head>
-
 <body>
     <!-- Cabeçalho Principal -->
     <header class="topbar">
@@ -267,7 +268,8 @@
             <div class="pokemon-detail-actions">
                 <button class="battle-primary-button" id="confirm-pokemon-selection" type="button">Adicionar ao
                     time</button>
-                <button class="picker-back-button team-random-button" id="pokemon-detail-back" type="button">Escolher outro.</button>
+                <button class="picker-back-button team-random-button" id="pokemon-detail-back" type="button">Escolher
+                    outro.</button>
             </div>
             <p class="picker-view-message" id="pokemon-detail-message" role="status"></p>
         </section>
@@ -322,6 +324,7 @@
         </div>
         <div class="switch-picker-list" id="switch-picker-list" aria-live="polite"></div>
     </dialog>
+    
 </body>
 
 </html>

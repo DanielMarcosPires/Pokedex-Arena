@@ -77,7 +77,7 @@ function openItemPicker() {
             pendingHeldItem = button.dataset.heldItem || null;
             openPickerModal("details");
             renderPokemonDetail();
-        }, { once:يدية ? false : true }); // Garante que limpa ouvintes duplicados se recriado
+        }, { once: true });
     });
 }
 
