@@ -45,14 +45,24 @@ function renderPokemonDetail() {
                 <span class="pokemon-number">#${String(entry.id).padStart(4, "0")}</span>
                 <div class="pokemon-detail-name-row">
                     <h3>${formatName(entry.name)}</h3>
-                    <button class="held-item-slot" type="button" data-choose-held-item
-                        aria-label="${pendingHeldItem ? `Trocar item ${plainName(pendingHeldItem.replace(/_/g, "-"))}` : "Escolher item"}">
-                        ${pendingHeldItem
-                            ? `<img src="${escapeHTML(itemSpriteUrl(pendingHeldItem))}" alt="" onerror="this.hidden = true">`
-                            : '<span aria-hidden="true">+</span>'}
-                    </button>
+                    <ul class="pokemon-held-item">
+                        <button class="held-item-slot" type="button" data-choose-held-item
+                            aria-label="${pendingHeldItem ? `Trocar item ${plainName(pendingHeldItem.replace(/_/g, "-"))}` : "Escolher item"}">
+                            ${pendingHeldItem
+                                ? `<img 
+                                    src="${escapeHTML(itemSpriteUrl(pendingHeldItem))}" 
+                                    alt="${plainName(pendingHeldItem.replace(/_/g, "-"))}" 
+                                    onerror="this.hidden = true"
+                                >`
+                                : '<span aria-hidden="true">+</span>'
+                            }
+                        </button>
+                        <p class="held-item-name">${pendingHeldItem ? plainName(pendingHeldItem.replace(/_/g, "-")) : ""}</p>
+                    </ul>
                 </div>
-                <div class="type-list">${types}</div>
+                <div class="type-list">
+                    ${types}
+                </div>
                 <p class="pokemon-base-chart-title">Atributos base</p>
                 <div class="pokemon-detail-stats">${stats}</div>
             </div>

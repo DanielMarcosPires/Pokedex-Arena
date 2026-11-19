@@ -106,14 +106,14 @@ function showPickerMode(mode) {
     
     const titles = {
         list: "Escolher Pokémon",
-        details: "Preparar Pokémon",
+        // details: "Preparar Pokémon",
         items: "Escolher item",
-        //moves: "Escolher golpes"
+        moves: "Escolher golpes"
     };
     
     const contexts = {
         list: "Selecione um Pokémon para configurar seu time.",
-        details: "Confira o Pokémon e defina item e golpes.",
+        // details: "Confira o Pokémon e defina item e golpes.",
         items: "Escolha o item que este Pokémon vai segurar.",
         //moves: "Selecione quatro golpes para este Pokémon."
     };
