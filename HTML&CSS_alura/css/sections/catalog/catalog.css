@@ -5,7 +5,7 @@
 
 .catalog-intro {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 1em;
     line-height: 1.6;
     margin-bottom: 3px;
 }

@@ -23,7 +23,7 @@
 .picker-dialog-header p:last-child {
     margin: 7px 0 0;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .picker-close {
@@ -34,7 +34,7 @@
     border-radius: 50%;
     background: transparent;
     color: var(--text);
-    font-size: 22px;
+    font-size: 2em;
     line-height: 20px;
     cursor: pointer;
 }
@@ -61,7 +61,7 @@
     display: grid;
     gap: 5px;
     color: var(--muted);
-    font-size: 9px;
+    font-size: .8em;
 }
 
 .picker-generation select {
@@ -72,7 +72,7 @@
     background: var(--surface);
     color: var(--text);
     padding: 0 10px;
-    font: 500 11px var(--font-body);
+    font: 700 1em var(--font-display);
 }
 
 .picker-generation select:focus {
@@ -90,7 +90,7 @@
     outline: 0;
     background: transparent;
     color: var(--text);
-    font: 12px var(--font-body);
+    font: 600 1em var(--font-display);
 }
 
 .picker-search input::placeholder {
@@ -104,7 +104,7 @@
     gap: 12px;
     min-height: 42px;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 1em;
 }
 
 .picker-result-line p {
@@ -117,7 +117,7 @@
     background: var(--surface);
     color: var(--text);
     padding: 6px 10px;
-    font-size: 10px;
+    font-size: 1em;
     cursor: pointer;
 }
 
@@ -158,7 +158,7 @@
     background: #171a22d9;
     color: #d7d9de;
     padding: 4px 6px;
-    font-size: 8px;
+    font-size: 1em;
 }
 
 .picker-pagination {
@@ -171,7 +171,7 @@
     background: transparent;
     color: var(--muted);
     padding: 0 10px;
-    font: 500 10px var(--font-body);
+    font: 600 1em var(--font-display); 
     cursor: pointer;
 }
 
@@ -183,7 +183,7 @@
     min-height: 16px;
     margin: 10px 0 0;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 1em;
 }
 
 .picker-view-heading {
@@ -196,7 +196,7 @@
 .picker-view-heading h3 {
     margin: 0;
     color: #ececf0;
-    font: 600 16px var(--font-display);
+    font: 600 1em var(--font-display);
 }
 
 .item-picker-grid {
@@ -247,7 +247,7 @@
     border: 1px dashed #626675;
     border-radius: 50%;
     color: var(--muted);
-    font-size: 18px;
+    font-size: 1.5em;
 }
 
 .item-picker-option-copy {
@@ -258,18 +258,18 @@
 
 .item-picker-option-copy strong {
     color: #ececf0;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); 
 }
 
 .item-picker-option-copy small {
     color: var(--muted);
-    font-size: 8px;
+    font-size: 1em;
     line-height: 1.4;
 }
 
 .item-picker-check {
     color: var(--accent);
-    font: 600 8px var(--font-display);
+    font: 600 1em var(--font-display);
     text-align: right;
 }
 
@@ -320,18 +320,18 @@
     border: 1px solid #555967;
     border-radius: 4px;
     color: var(--accent);
-    font-size: 13px;
+    font-size: 1em;
 }
 
 .move-picker-option .move-preview-heading strong {
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .move-picker-option > p {
     grid-column: 2;
     margin: 5px 0;
     color: #b7b9c1;
-    font-size: 9px;
+    font-size: .8em;
     line-height: 1.45;
 }
 

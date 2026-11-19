@@ -37,14 +37,17 @@ window.PokedexApp.details = (() => {
         if (offense >= 115) return values.attack >= values["special-attack"] ? "Atacante físico" : "Atacante especial";
         if (defense >= 110 && values.hp >= 80) return "Defensor";
         if (values.speed >= 90) return "Ágil / suporte";
-        
+
         return "Versátil";
     }
 
     // 2. Gera o marcação HTML para chips de tipos e matchups de dano
-    function matchupMarkup(type, kind) {
+    function matchupMarkup(type, kind, multiplier) {
         const label = kind === "neutral" ? `${typeLabel(type)} · imune` : typeLabel(type);
-        return `<span class="matchup-chip ${kind} type-${escapeHTML(type)}">${label}</span>`;
+        console.log(label)
+        return `<span class="matchup-chip ${kind} type-${escapeHTML(type)}">
+        ${label} ${multiplier}×
+        </span>`;
     }
 
     // 3. Calcula fraquezas, resistências e imunidades com base nas tipagens defensivas do Pokémon
@@ -90,7 +93,7 @@ window.PokedexApp.details = (() => {
     async function loadMoveTypes(moves) {
         const moveTypes = new Map();
         const batchSize = 8;
-        
+
         for (let index = 0; index < moves.length; index += batchSize) {
             const batch = moves.slice(index, index + batchSize);
             const details = await Promise.all(batch.map(({ move }) => api.getMove(move.url)));
@@ -98,14 +101,14 @@ window.PokedexApp.details = (() => {
                 moveTypes.set(batch[batchIndex].move.name, detail.type.name);
             });
         }
-        
+
         return moveTypes;
     }
 
     // 7. Renderiza a lista completa de golpes disponíveis organizados e ordenados alfabeticamente
     function renderMoveList(moves, moveTypes) {
         const moveMap = new Map();
-        
+
         moves.forEach(({ move, version_group_details }) => {
             const entry = moveMap.get(move.name) || { name: move.name, methods: new Set(), level: null };
             version_group_details.forEach(({ level_learned_at, move_learn_method }) => {
@@ -122,27 +125,27 @@ window.PokedexApp.details = (() => {
 
         return `<ol class="move-list" aria-label="Golpes disponíveis, em ordem alfabética" tabindex="0">
             ${orderedMoves.map(({ name, methods, level }) => {
-                const moveType = moveTypes.get(name);
-                if (!moveType) throw new Error(`PokéAPI não retornou o tipo do golpe ${name}`);
-                
-                const methodLabels = [...methods]
-                    .map((method) => ({
-                        label: moveMethodLabels[method] || formatName(method),
-                        className: moveMethodClasses[method] || ""
-                    }))
-                    .sort((a, b) => a.label.localeCompare(b.label))
-                    .map(({ label, className }) => `<span class="move-method ${className}">${label}</span>`)
-                    .join("");
-                    
-                return `<li class="move-item"><span class="move-level">${level ?? "-"}</span><span class="move-name">${formatName(name)}</span><span class="move-type type-${escapeHTML(moveType)}">${typeLabel(moveType)}</span><span class="move-methods">${methodLabels}</span></li>`;
-            }).join("")}
+            const moveType = moveTypes.get(name);
+            if (!moveType) throw new Error(`PokéAPI não retornou o tipo do golpe ${name}`);
+
+            const methodLabels = [...methods]
+                .map((method) => ({
+                    label: moveMethodLabels[method] || formatName(method),
+                    className: moveMethodClasses[method] || ""
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label))
+                .map(({ label, className }) => `<span class="move-method ${className}">${label}</span>`)
+                .join("");
+
+            return `<li class="move-item"><span class="move-level">${level ?? "-"}</span><span class="move-name">${formatName(name)}</span><span class="move-type type-${escapeHTML(moveType)}">${typeLabel(moveType)}</span><span class="move-methods">${methodLabels}</span></li>`;
+        }).join("")}
         </ol>`;
     }
 
     // 8. Renderiza os multiplicadores de dano para fraquezas e resistências
     function renderMatchups(matchups, kind) {
         return [...matchups].map(([type, multiplier]) =>
-            `${matchupMarkup(type, kind)}<span class="matchup-multiplier">${multiplier}×</span>`).join("");
+            `${matchupMarkup(type, kind, multiplier)}`).join("");
     }
 
     // 9. Constrói e injeta o HTML completo da ficha detalhada do Pokémon na interface modal
@@ -150,7 +153,7 @@ window.PokedexApp.details = (() => {
         const descriptions = species.flavor_text_entries;
         const portugueseDescription = descriptions.find((entry) => entry.language.name === "pt-br")
             || descriptions.find((entry) => entry.language.name === "pt");
-            
+
         const description = portugueseDescription?.flavor_text
             || descriptions.find((entry) => entry.language.name === "en" && entry.version.name === "scarlet")?.flavor_text
             || descriptions.find((entry) => entry.language.name === "en")?.flavor_text
@@ -162,25 +165,36 @@ window.PokedexApp.details = (() => {
 
         const cleanDescription = escapeHTML(description.replace(/[\n\f]/g, " "));
         const { weak, resist, immune } = getMatchups(typeData);
-        
+
         const weaknessTags = renderMatchups(weak, "weak");
         const resistTags = renderMatchups(resist, "resist");
         const immuneTags = [...immune].map((type) => matchupMarkup(type, "neutral")).join("");
-        
+
         const typeMarkup = pokemon.types.map(({ type }) =>
             `<span class="type-tag type-${escapeHTML(type.name)}">${typeLabel(type.name)}</span>`).join("");
-            
+
         const total = statTotal(pokemon);
 
         detailContent.innerHTML = `
             <div class="detail-hero">
-                <div class="detail-image-wrap"><img src="${escapeHTML(imageUrl(pokemon))}" alt="${formatName(pokemon.name)}"></div>
-                <div>
-                    <span class="detail-number">#${String(pokemon.id).padStart(4, "0")} · GERAÇÃO ${generationFor(pokemon.id)}</span>
-                    <h2 class="detail-title" id="detail-name">${escapeHTML(localizedName)}</h2>
+             <div>
+                <div class="detail-image-wrap">
+                    <img src="${escapeHTML(imageUrl(pokemon))}" alt="${formatName(pokemon.name)}">
+                </div>
                     <div class="detail-abilities">
-                        <span class="detail-abilities-label">HABILIDADES</span>
-                        <div class="detail-list">${renderAbilities(pokemon.abilities)}</div>
+                         <span class="detail-number">
+                            #${String(pokemon.id).padStart(4, "0")} · GERAÇÃO ${generationFor(pokemon.id)}
+                            </span>
+                            <h2 class="detail-title" id="detail-name">
+                                ${escapeHTML(localizedName)}
+                            </h2>    
+                    <div>
+                         <span class="detail-abilities-label">
+                         HABILIDADES
+                         </span>
+                        <div class="detail-list">
+                        ${renderAbilities(pokemon.abilities)}
+                        </div>
                     </div>
                     <div class="detail-types">${typeMarkup}</div>
                     <p class="detail-description">${cleanDescription}</p>
@@ -192,15 +206,24 @@ window.PokedexApp.details = (() => {
                         <section class="detail-section">
                             <h3>ATRIBUTOS BASE</h3>
                             ${renderStats(pokemon.stats)}
-                            <div class="total-row"><span>Total (BST)</span><strong>${total}</strong></div>
-                        </section>
-                        <section class="detail-section">
-                            <h3>GOLPES DISPONÍVEIS</h3>
-                            <p class="nature-note move-list-note">Nível do jogo mais recente com dado disponível; “-” indica que a PokéAPI não informa nível. Lista combinada entre versões.</p>
-                            <div class="move-list-heading" aria-hidden="true"><span>NÍVEL</span><span>GOLPE</span><span>TIPO</span><span>MÉTODO</span></div>
-                            ${renderMoveList(pokemon.moves, moveTypes)}
+                            <div class="total-row">
+                                <span>Total (BST)</span><strong>${total}</strong>
+                            </div>
                         </section>
                     </div>
+                     <section class="detail-section">
+                            <h3>GOLPES DISPONÍVEIS</h3>
+                            <p class="nature-note move-list-note">
+                                Nível do jogo mais recente com dado disponível; “-” indica que a PokéAPI não informa nível. Lista combinada entre versões.
+                            </p>
+                            <div class="move-list-heading" aria-hidden="true">
+                                <span>NÍVEL</span>
+                                <span>GOLPE</span>
+                                <span>TIPO</span>
+                                <span>MÉTODO</span>
+                            </div>
+                            ${renderMoveList(pokemon.moves, moveTypes)}
+                        </section>
                     <div>
                         <section class="detail-section">
                             <h3>PERFIL DE BATALHA</h3>
@@ -209,11 +232,15 @@ window.PokedexApp.details = (() => {
                         </section>
                         <section class="detail-section">
                             <h3>FRAQUEZAS · DANO RECEBIDO</h3>
-                            <div class="matchups">${weaknessTags || '<span class="matchup-chip neutral">Sem fraquezas 2×</span>'}</div>
+                            <div class="matchups">
+                                ${weaknessTags || '<span class="matchup-chip neutral">Sem fraquezas 2×</span>'}
+                            </div>
                         </section>
                         <section class="detail-section">
                             <h3>RESISTÊNCIAS E IMUNIDADES</h3>
-                            <div class="matchups">${resistTags}${immuneTags}${resist.size + immune.size === 0 ? '<span class="matchup-chip neutral">Nenhuma</span>' : ""}</div>
+                            <div class="matchups">
+                                ${resistTags}${immuneTags}${resist.size + immune.size === 0 ? '<span class="matchup-chip neutral">Nenhuma</span>' : ""}
+                            </div>
                         </section>
                     </div>
                 </div>
@@ -230,7 +257,7 @@ window.PokedexApp.details = (() => {
     async function open(id) {
         dialog.showModal();
         detailContent.innerHTML = '<div class="detail-loading"><span class="loader"></span><span>Carregando ficha...</span></div>';
-        
+
         try {
             const pokemon = await api.getPokemon(id);
             const [species, typeData, moveTypes] = await Promise.all([

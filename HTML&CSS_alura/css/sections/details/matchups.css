@@ -9,7 +9,7 @@
     padding: 6px 8px;
     border: 1px solid #ffffff30;
     color: #14151a;
-    font-size: 9px;
+    font-size: 1em;
     text-transform: uppercase;
 }
 
@@ -24,7 +24,7 @@
 
 .matchup-multiplier {
     color: #d7d9de;
-    font-size: 9px;
+    font-size: 1em;
     align-self: center;
     margin: 0 3px 0 -4px;
 }

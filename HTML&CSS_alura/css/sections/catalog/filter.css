@@ -3,11 +3,11 @@
     background: none;
     color: var(--accent);
     cursor: pointer;
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .clear-filters span {
-    font-size: 16px;
+    font-size: 1em;
     padding-left: 5px;
     vertical-align: -1px;
 }

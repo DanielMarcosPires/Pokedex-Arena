@@ -1,12 +1,12 @@
 
 .stat-name {
     color: #9b9eaa;
-    font-size: 10px;
+    font-size: 1em;
 }
 
 .stat-value {
     color: #e6e7ea;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display);
     text-align: right;
 }
 

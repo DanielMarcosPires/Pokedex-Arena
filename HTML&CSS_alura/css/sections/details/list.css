@@ -10,7 +10,7 @@
     border-radius: 3px;
     color: #ced0d6;
     padding: 6px 8px;
-    font-size: 10px;
+    font-size: 1em;
     text-transform: capitalize;
 }
 
@@ -24,7 +24,7 @@
     gap: 8px;
     padding: 0 8px 6px 0;
     color: #9b9eaa;
-    font: 600 8px var(--font-display);
+    font: 600  1em var(--font-display); 
     letter-spacing: .06em;
 }
 
@@ -50,7 +50,7 @@
     padding: 7px 8px 7px 2px;
     border-bottom: 1px solid #ffffff0d;
     color: var(--text);
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .move-level {
@@ -67,7 +67,7 @@
 .move-type {
     border-radius: 3px;
     color: #14151a;
-    font-size: 8px;
+    font-size: 1em;
     font-weight: 700;
     padding: 3px 6px;
     text-transform: uppercase;
@@ -86,7 +86,7 @@
     border-radius: 3px;
     padding: 2px 5px;
     color: #b7b9c1;
-    font-size: 9px;
+    font-size: 1em;
     white-space: nowrap;
 }
 

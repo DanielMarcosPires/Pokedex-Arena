@@ -8,7 +8,7 @@
 .move-preview-heading strong {
     overflow: hidden;
     color: #ececf0;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); var(--font-display);
     text-overflow: ellipsis;
     text-transform: capitalize;
     white-space: nowrap;
@@ -17,17 +17,17 @@
 .move-preview-heading .type-tag {
     flex: 0 0 auto;
     padding: 3px 5px;
-    font-size: 7px;
+    font-size: .8em;
 }
 
 .move-preview-meta {
     color: #8f92a0;
-    font-size: 8px;
+    font-size: .8em;
 }
 
 .slot-move-note {
     margin: 7px 0 0;
     color: #8f92a0;
-    font-size: 9px;
+    font-size: .8em;
     line-height: 1.4;
 }

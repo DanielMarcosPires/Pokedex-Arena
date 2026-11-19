@@ -8,12 +8,12 @@
     border: 1px solid var(--line);
     border-radius: 6px;
     background: #171a22;
-    padding: 14px 16px;
+    padding: 16px 16px;
 }
 
 .online-lobby-copy h3 {
     margin: 0 0 4px;
-    font: 600 13px var(--font-display);
+    font: 600 1em var(--font-display);
 }
 
 .online-lobby-copy p,
@@ -21,7 +21,7 @@
 .online-waiting-panel p {
     margin: 0;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .online-lobby-actions {
@@ -33,14 +33,14 @@
 }
 
 .online-room-entry input {
-    width: 145px;
+    width: max-content;
     min-height: 42px;
     border: 1px solid var(--line);
     border-radius: 4px;
     background: var(--surface);
     color: var(--text);
     padding: 0 10px;
-    font: 700 12px var(--font-display);
+    font: 600 1em var(--font-display);
     letter-spacing: .12em;
     text-align: center;
     text-transform: uppercase;

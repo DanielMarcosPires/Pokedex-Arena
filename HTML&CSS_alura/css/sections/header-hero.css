@@ -6,6 +6,7 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid rgba(255, 255, 255, .07);
+    font-size: 1em;
 }
 
 .brand {
@@ -56,7 +57,7 @@
     display: flex;
     gap: 35px;
     height: 100%;
-    font-size:16px;
+    font-size:1em;
     align-items: center;
 }
 
@@ -123,9 +124,9 @@
 
 .eyebrow {
     color: var(--accent);
-    font-size: 10px;
+    font-size: 1em;
     font-weight: 700;
-    letter-spacing: .17em;
+    letter-spacing: .1em;
     display: flex;
     align-items: center;
     gap: 9px;
@@ -153,7 +154,7 @@
     max-width: 450px;
     line-height: 1.7;
     color: #a4a6b0;
-    font-size: 14px;
+    font-size: 1em;
     margin-bottom: 25px;
 }
 
@@ -164,7 +165,7 @@
     color: #161a0e;
     background: var(--accent);
     padding: 13px 17px;
-    font-size: 10px;
+    font-size: 1em;
     letter-spacing: .08em;
     font-weight: 700;
     border-radius: 3px;
@@ -177,7 +178,7 @@
 }
 
 .hero-cta span {
-    font-size: 17px;
+    font-size: .9em;
     line-height: 10px;
 }
 
@@ -265,18 +266,18 @@
 .spark-one {
     top: 58px;
     right: 52px;
-    font-size: 24px;
+    font-size: 2em;
 }
 
 .spark-two {
     bottom: 63px;
     left: 37px;
-    font-size: 29px;
+    font-size: 2.9em;
 }
 
 .hero-index {
     color: #747782;
-    font: 600 9px var(--font-display);
+    font: 600 .9em var(--font-display);
     letter-spacing: .2em;
     position: absolute;
     bottom: 12px;
@@ -296,17 +297,17 @@
     border-top: 1px solid rgba(255, 255, 255, .08);
     padding: 13px 0;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 1em;
 }
 
 .hero-bottom strong {
     color: var(--accent);
-    font: 600 16px var(--font-display);
+    font: 600 1.1em var(--font-display);
     margin-right: 5px;
 }
 
 .hero-bottom p {
-    font-size: 9px;
+    font-size: .6em;
     letter-spacing: .14em;
     margin: 0;
 }

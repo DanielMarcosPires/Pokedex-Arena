@@ -34,13 +34,13 @@
     left: 12px;
     top: 12px;
     color: #8d909c;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); 
     letter-spacing: .05em;
     z-index: 2;
 }
 
 .card-info {
-    padding: 12px 13px 14px;
+    padding: 12px 13px 16px;
 }
 
 .card-name-row {
@@ -52,7 +52,7 @@
 }
 
 .card-name {
-    font: 600 15px var(--font-display);
+    font: 600 1em var(--font-display);
     text-transform: capitalize;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -61,7 +61,7 @@
 
 .card-bst {
     color: #858894;
-    font-size: 9px;
+    font-size: .8em;
     white-space: nowrap;
 }
 
@@ -74,11 +74,11 @@
 
 .card-stat-label {
     color: #858894;
-    font-size: 9px;
+    font-size: .8em;
     white-space: nowrap;
 }
 
 .card-total {
     color: #d1d2d6;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); 
 }

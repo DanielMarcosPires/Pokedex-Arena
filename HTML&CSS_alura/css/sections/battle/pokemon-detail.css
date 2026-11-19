@@ -37,7 +37,7 @@
 
 .pokemon-number {
     color: var(--muted);
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); var(--font-display);
 }
 
 .pokemon-detail-info h3 {
@@ -52,7 +52,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    gap: 16px;
 }
 
 .pokemon-detail-name-row h3 {
@@ -88,7 +88,7 @@
 .pokemon-base-stat-label {
     overflow: hidden;
     color: var(--muted);
-    font-size: 9px;
+    font-size: .8em;
     text-overflow: ellipsis;
     white-space: nowrap;
 }

@@ -42,7 +42,7 @@
 .pokemon-move-slot-label {
     grid-column: 1 / -1;
     color: var(--muted);
-    font: 600 8px var(--font-display);
+    font: 600  1em var(--font-display); 
     text-transform: uppercase;
 }
 
@@ -50,7 +50,7 @@
     min-width: 0;
     overflow: hidden;
     color: #ececf0;
-    font: 600 10px var(--font-display);
+    font: 600 1em var(--font-display); 
     text-overflow: ellipsis;
     text-transform: capitalize;
     white-space: nowrap;
@@ -58,7 +58,7 @@
 
 .pokemon-move-button .type-tag {
     padding: 3px 5px;
-    font-size: 7px;
+    font-size: .8em;
 }
 
 .pokemon-move-button.is-empty strong {

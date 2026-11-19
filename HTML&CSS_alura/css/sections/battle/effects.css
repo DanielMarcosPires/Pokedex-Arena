@@ -116,7 +116,7 @@
     background: #271b20ed;
     padding: 6px 10px;
     color: #ffaaa1;
-    font: 700 10px var(--font-display);
+    font: 700 1em var(--font-display);
     letter-spacing: .04em;
     text-shadow: 0 1px 8px #000b;
     transform: translateX(-50%);

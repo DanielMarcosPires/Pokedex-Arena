@@ -4,17 +4,17 @@
     background: var(--surface-raised);
     color: var(--text);
     border-radius: 3px;
-    padding: 8px 14px;
+    padding: 8px 16px;
 }
 
 .detail-meta {
     border-top: 1px solid var(--line);
-    padding-top: 14px;
+    padding-top: 16px;
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 22px;
+    gap: 16px 22px;
     color: #a4a6b0;
-    font-size: 10px;
+    font-size: 1em;
 }
 
 .detail-meta strong {
